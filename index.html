@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>Quadrilaterals!</title>
+	<link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
+	<link type="text/css" rel="stylesheet" href="css/style.css" media="screen,projection" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<style>
+
+	</style>
+</head>
+
+<body>
+	<div class="navbar-fixed">
+		<nav class="teal">
+			<div class="nav-wrapper container row">
+				<!-- logo -->
+				<a class="brand-logo">
+					<!-- <h2> -->
+					Quadrilaterals!
+					<!-- </h2> -->
+				</a>
+
+			</div>
+		</nav>
+	</div>
+	<main class="container">
+		<div class="row" style="margin-bottom: 0;">
+			<div class="col s8" style="line-height: 0;padding: 0;position: relative;">
+				<canvas id="canvas" width="2000px" height="2000px"></canvas>
+				<canvas id="mask" width="2000px" height="2000px" style="position: absolute;top: 0; left: 0;"></canvas>
+			</div>
+			<div class="col s4">
+				something here
+			</div>
+		</div>
+	</main>
+
+
+	<script type="text/javascript" src="js/jquery-2.1.3.min.js"></script>
+	<script type="text/javascript" src="js/materialize.min.js"></script>
+	<script type="text/javascript" src="js/polygon.js"></script>
+	<script type="text/javascript" src="js/algorithm.js"></script>
+	<script type="text/javascript" src="js/interactions.js"></script>
+
+	<script>
+		var CANVAS_SIZE = {
+			width: 2000,
+			height: 2000
+		};
+		var CANVAS_SCALE = CANVAS_SIZE.height / 2000 * 5;
+		var ctx, $canvas, canvas;
+		var ctx_mask, $mask, mask;
+		$(document).ready(function() {
+			$canvas = $('#canvas');
+			canvas = $canvas[0];
+			ctx = canvas.getContext('2d');
+			$mask = $('#mask');
+			mask = $mask[0];
+			ctx_mask = mask.getContext('2d');
+			$('body').on('contextmenu', '#mask', function(e){ return false; });
+			mask.addEventListener('mouseup', canvasMouseUp);
+			mask.addEventListener('mousemove', canvasMouseMove);
+		});
+	</script>
+
+</body>
+
+</html>
