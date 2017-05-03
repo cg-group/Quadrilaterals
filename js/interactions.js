@@ -28,40 +28,88 @@ function canvasMouseUp(e) {
     var y = tmp.y;
 
     if (e.which == 1) {
-        var c = candidateVertex(x, y);
-        clearCanvas(ctx);
-        current_ring.pushVertex(c.x, c.y);
-        current_polygon.draw(ctx);
-        if (current_vertex != null) {
-            if (current_direction == null) {
-                current_direction = Math.abs(x - current_vertex.x) >= Math.abs(y - current_vertex.y) ? "vertical" : "horizontal";
-            } else {
-                current_direction = current_direction == "horizontal" ? "vertical" : "horizontal";
-            }
-        }
-        current_vertex = current_ring.vertices[current_ring.vertices.length - 1];
+		// 左键添加顶点
+		var c = candidateVertex(x, y);
+		addVertex(c.x, c.y);
     } else {
-        // 封闭多边形
-        if (current_ring.vertices.length % 2 == 1) {
-            if (current_direction == "horizontal") {
-                current_ring.pushVertex(current_ring.vertices[0].x, current_vertex.y);
-            } else {
-                current_ring.pushVertex(current_vertex.x, current_ring.vertices[0].y);
-            }
-            current_ring.close();
-
-            clearCanvas(ctx);
-            current_polygon.draw(ctx);
-
-            current_vertex = null;
-            current_direction = null;
-        }
+		// 其他按键封闭环
+        closeRing();
     }
     canvasMouseMove(e);
 }
 
+function addVertex(x, y) {
+	// 输入是待添加顶点，已经计算好确保是垂直、水平的
+	// 如果当前环封闭，那么创建新环
+	clearCanvas(ctx);
+	if (current_ring == null) {
+		createNewRing(x, y);
+	}
+	current_ring.pushVertex(x, y);
+	current_polygon.draw(ctx);
+	if (current_vertex != null) {
+		if (current_direction == null) {
+			current_direction = Math.abs(x - current_vertex.x) >= Math.abs(y - current_vertex.y) ? "vertical" : "horizontal";
+		} else {
+			current_direction = current_direction == "horizontal" ? "vertical" : "horizontal";
+		}
+	}
+	current_vertex = current_ring.vertices[current_ring.vertices.length - 1];
+}
+
+function createNewRing(x, y) {
+	// 判断坐标x y在哪里，
+	// 如果在某个区域内部，那么创建一个内环，
+	// 如果不在任何一个区域内，那么创建一个区域及外环
+	// 在边界上暂时作为区域外处理
+	var regions = current_polygon.regions;
+	var is_in = -1;
+	for (var i = 0; i < regions.length; i++) {
+		var status = regions[i].includingPoint(x, y);
+		if (status == "in") {
+			is_in = i;
+			break;
+		}
+	}
+	if (is_in == -1) {
+		// 不在任何区域内，或在边界上
+		var r = new Region();
+		current_polygon.pushRegion(r);
+		current_region = r;
+		var ring = new Ring();
+		r.setOuterRing(ring);
+		current_ring = ring;
+	} else {
+		// 在某区域内
+		var ring = new Ring();
+		current_region.pushInnerRing(ring);
+		current_ring = ring;
+	}
+}
+
+function closeRing() {
+	// 封闭当前多边形环
+	if (current_ring.vertices.length % 2 == 1) {
+		if (current_direction == "horizontal") {
+			current_ring.pushVertex(current_ring.vertices[0].x, current_vertex.y);
+		} else {
+			current_ring.pushVertex(current_vertex.x, current_ring.vertices[0].y);
+		}
+		current_ring.close();
+
+		clearCanvas(ctx);
+		current_polygon.draw(ctx);
+
+		current_vertex = null;
+		current_direction = null;
+		current_ring = null;
+	} else {
+		console.log('边数是奇数，不能封闭');
+	}
+}
+
 function coordWindowToReal(e) {
-    // console.log(e);
+	// 将鼠标在canvas上的偏移量转换成canvas中实际的坐标
     var x = e.offsetX;
     var y = e.offsetY;
     x /= $canvas.width() / CANVAS_SIZE.width;
@@ -86,6 +134,8 @@ function generateRandomColor() {
 }
 
 function drawIndicateInfo(x, y) {
+	// 输入当前鼠标坐标
+	// 在mask层绘制提示的线、顶点
     var radius = CANVAS_SCALE * 2;
     var line_width = CANVAS_SCALE;
 
@@ -108,6 +158,8 @@ function drawIndicateInfo(x, y) {
 }
 
 function candidateVertex(x, y) {
+	// 输入当前鼠标坐标
+	// 输出一个坐标，如果现在按下鼠标，那么创建的点就是这个坐标点
     if (current_vertex == null) {
         return {
             x: x,

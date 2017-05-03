@@ -87,6 +87,15 @@ Object.assign(Region.prototype, {
         return this;
     },
 
+    includingPoint: function(x, y) {
+        // 判断是否包含某个坐标点，返回 in out 或者 boundary
+        // 如果在任意一个内环内，那么就是外部
+        // 否则，如果在外环内，那么是内部
+        // @TODO
+
+        return "in";
+    },
+
     draw: function(context) {
         for (var i = 0; i < this.outerRing.length; i++) {
             this.outerRing[i].draw(context, true);
@@ -152,31 +161,39 @@ Object.assign(Ring.prototype, {
         return this;
     },
 
+    includingPoint: function(x, y) {
+        // @TODO
+    },
+
     close: function() {
         this.closed = true;
     },
 
     draw: function(context, fill) {
-		if (!this.vertices.length) {
-			return;
-		}
-		context.save();
-		context.lineWidth = CANVAS_SCALE;
-		context.strokeStyle = "black";
-		context.fillStyle = this.color;
+        if (!this.vertices.length) {
+            return;
+        }
+        context.save();
+        context.lineWidth = CANVAS_SCALE;
+        context.strokeStyle = "black";
+        context.fillStyle = this.color;
         context.beginPath();
-		context.moveTo(this.vertices[0].x, this.vertices[0].y);
-		for (var i = 1; i < this.vertices.length; i++) {
-			context.lineTo(this.vertices[i].x, this.vertices[i].y);
-		}
-		if (this.closed) {
-			context.closePath();
-		}
-		context.stroke();
-        if (this.closed && fill) {
+        context.moveTo(this.vertices[0].x, this.vertices[0].y);
+        for (var i = 1; i < this.vertices.length; i++) {
+            context.lineTo(this.vertices[i].x, this.vertices[i].y);
+        }
+        if (this.closed) {
+            context.closePath();
+        }
+        context.stroke();
+        if (this.closed) {
+            if (!fill) {
+                // @TODO: 这样做可能会产生bug?
+                ctx.fillStyle = "white";
+            }
             context.fill();
         }
-		context.restore();
+        context.restore();
         for (var i = 0; i < this.vertices.length; i++) {
             this.vertices[i].draw(context, '#009688', 2);
         }
@@ -224,7 +241,7 @@ Object.assign(Point2D.prototype, {
     },
 
     draw: function(context, color, radius) {
-		radius *= CANVAS_SCALE;
+        radius *= CANVAS_SCALE;
         context.save();
         context.fillStyle = color;
         context.fillRect(this.x - radius, this.y - radius, 2 * radius + 1, 2 * radius + 1);
