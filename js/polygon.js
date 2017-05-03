@@ -169,6 +169,12 @@ Object.assign(Ring.prototype, {
         this.closed = true;
     },
 
+    lastVertex: function() {
+        if (this.vertices.length) {
+            return this.vertices[this.vertices.length - 1];
+        }
+    },
+
     draw: function(context, fill) {
         if (!this.vertices.length) {
             return;

@@ -54,7 +54,7 @@ function addVertex(x, y) {
 			current_direction = current_direction == "horizontal" ? "vertical" : "horizontal";
 		}
 	}
-	current_vertex = current_ring.vertices[current_ring.vertices.length - 1];
+	current_vertex = current_ring.lastVertex();
 }
 
 function createNewRing(x, y) {
@@ -89,6 +89,9 @@ function createNewRing(x, y) {
 
 function closeRing() {
 	// 封闭当前多边形环
+	if (current_ring.vertices.length <= 2) {
+		return;
+	}
 	if (current_ring.vertices.length % 2 == 1) {
 		if (current_direction == "horizontal") {
 			current_ring.pushVertex(current_ring.vertices[0].x, current_vertex.y);
@@ -104,7 +107,11 @@ function closeRing() {
 		current_direction = null;
 		current_ring = null;
 	} else {
-		console.log('边数是奇数，不能封闭');
+		// console.log('边数是奇数，不能封闭');
+		current_ring.vertices.pop();
+		current_vertex = current_ring.lastVertex();
+		current_direction = current_direction == "horizontal" ? "vertical" : "horizontal";
+		closeRing();
 	}
 }
 
