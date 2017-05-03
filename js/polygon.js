@@ -93,7 +93,7 @@ Object.assign(Region.prototype, {
         // 否则，如果在外环内，那么是内部
         // @TODO
 
-        return "in";
+        return "out";
     },
 
     draw: function(context) {
