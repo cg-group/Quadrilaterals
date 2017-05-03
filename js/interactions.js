@@ -40,22 +40,24 @@ function canvasMouseUp(e) {
             }
         }
         current_vertex = current_ring.vertices[current_ring.vertices.length - 1];
-        canvasMouseMove(e);
     } else {
         // 封闭多边形
-        if (current_direction == "horizontal") {
-            current_ring.pushVertex(current_ring.vertices[0].x, current_vertex.y);
-        } else {
-            current_ring.pushVertex(current_vertex.x, current_ring.vertices[0].y);
+        if (current_ring.vertices.length % 2 == 1) {
+            if (current_direction == "horizontal") {
+                current_ring.pushVertex(current_ring.vertices[0].x, current_vertex.y);
+            } else {
+                current_ring.pushVertex(current_vertex.x, current_ring.vertices[0].y);
+            }
+            current_ring.close();
+
+            clearCanvas(ctx);
+            current_polygon.draw(ctx);
+
+            current_vertex = null;
+            current_direction = null;
         }
-        current_ring.close();
-
-        clearCanvas(ctx);
-        current_polygon.draw(ctx);
-
-        current_vertex = null;
-        current_direction = null;
     }
+    canvasMouseMove(e);
 }
 
 function coordWindowToReal(e) {
