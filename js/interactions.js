@@ -36,7 +36,6 @@ function canvasMouseUp(e) {
     if (e.which == 1) {
         // 左键添加顶点
         addVertex(c.x, c.y);
-
     } else {
         // 其他按键封闭环
         closeRing(c.x, c.y);
@@ -133,6 +132,7 @@ function closeRing(x, y) {
         return;
     }
     var valid = checkCandidateVertexValid(x, y);
+    // console.log(valid);
     if (!valid[1]) {
         return;
     }
@@ -314,6 +314,10 @@ function checkCandidateVertexValid(x, y) {
     if (current_vertex == null) {
         return [true, true];
     }
+    if (y == undefined) {
+        x = current_vertex.x;
+        y = current_vertex.y;
+    }
     var r1 = true,
         r2 = true;
     var c = {
@@ -363,6 +367,11 @@ function updateTextInfo() {
     var str = current_polygon.print(true);
     str = str.split('\n').join('<br>');
     str = str.split('\t').join('&nbsp;&nbsp;');
+    str = str.split('Region').join('<orange>Region</orange>');
+    str = str.split('Outer Ring').join('<green>Outer Ring</green>');
+    str = str.split('Inner Rings').join('<green>Inner Rings</green>');
+    str = str.split('->').join('<red>-&gt;</red>');
+    str = str.split('closed').join('<blue>closed</blue>');
 
     $('#info').html(str);
 }

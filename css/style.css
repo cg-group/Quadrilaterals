@@ -215,18 +215,63 @@ canvas {
     -webkit-transform: scale(1.1) rotate(8deg);
     transform: scale(1.1) rotate(8deg);
 }
-
-.tap-target-wave a{
+red {
+    color: rgb(244, 67, 54);
+}
+pink {
+    color: rgb(233, 30, 99);
+}
+purple {
+    color: rgb(156, 39, 176);
+}
+indigo {
+    color: rgb(63, 81, 181);
+}
+aqua, blue {
+    color: rgb(33, 150, 243);
+}
+cyan {
+    color: rgb(0, 188, 212);
+}
+teal {
+    color: rgb(0, 150, 136);
+}
+green {
+    color: rgb(76, 175, 80);
+}
+lime {
+    color: rgb(205, 220, 57);
+}
+yellow {
+    color: rgb(255, 235, 59);
+}
+amber {
+    color: rgb(255, 193, 7);
+}
+orange {
+    color: rgb(255, 152, 0);
+}
+brown {
+    color: rgb(121, 85, 72);
+}
+grey {
+    color: rgb(158, 158, 158);
+}
+black {
+    background-color: black;
+}
+shadow {
+    text-shadow: 2.5px 1px rgba(0, 0, 0, 0.15);
+}
+.tap-target-wave a {
     display: none;
 }
 .fixed-action-btn {
     z-index: 10000;
 }
-
 nav {
     box-shadow: initial;
 }
-
 #info {
     font-size: 10px;
     max-height: 50%;
