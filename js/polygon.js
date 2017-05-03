@@ -43,7 +43,7 @@ Object.assign(Polygon.prototype, {
         if (!do_not_print) {
             console.log(str);
         }
-        // return str;
+        return str;
     }
 });
 

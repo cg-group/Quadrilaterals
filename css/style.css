@@ -226,3 +226,8 @@ canvas {
 nav {
     box-shadow: initial;
 }
+
+#info {
+    font-size: 10px;
+    max-height: 50%;
+}

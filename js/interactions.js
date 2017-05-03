@@ -15,6 +15,7 @@ function resetAll() {
     current_region.setOuterRing(current_ring);
     clearCanvas(ctx);
     clearCanvas(ctx_mask);
+    updateTextInfo();
 }
 
 function canvasMouseMove(e) {
@@ -31,9 +32,11 @@ function canvasMouseUp(e) {
     var y = tmp.y;
     var c = candidateVertex(x, y);
 
+
     if (e.which == 1) {
         // 左键添加顶点
         addVertex(c.x, c.y);
+
     } else {
         // 其他按键封闭环
         closeRing(c.x, c.y);
@@ -56,15 +59,24 @@ function keyEvent(e) {
 }
 
 function addRandomPoint() {
-    var x = Math.floor(Math.random() * CANVAS_SIZE.width);
-    var y = Math.floor(Math.random() * CANVAS_SIZE.height);
-    var c = candidateVertex(x, y);
+    do {
+        var x = Math.floor(Math.random() * CANVAS_SIZE.width);
+        var y = Math.floor(Math.random() * CANVAS_SIZE.height);
+        var c = candidateVertex(x, y);
+        var valid = checkCandidateVertexValid(x, y);
+    } while (!valid[0]);
     addVertex(c.x, c.y);
 }
 
 function addVertex(x, y) {
     // 输入是待添加顶点，已经计算好确保是垂直、水平的
     // 如果当前环封闭，那么创建新环
+
+    var valid = checkCandidateVertexValid(x, y);
+    if (!valid[0]) {
+        return false;
+    }
+
     clearCanvas(ctx);
     if (current_ring == null) {
         createNewRing(x, y);
@@ -79,6 +91,8 @@ function addVertex(x, y) {
         }
     }
     current_vertex = current_ring.lastVertex();
+    updateTextInfo();
+    return true;
 }
 
 function createNewRing(x, y) {
@@ -118,6 +132,11 @@ function closeRing(x, y) {
     if (current_ring == null || current_ring.vertices.length <= 1) {
         return;
     }
+    var valid = checkCandidateVertexValid(x, y);
+    if (!valid[1]) {
+        return;
+    }
+
     if (current_ring.vertices.length % 2 == 1) {
         if (current_direction == "horizontal") {
             current_ring.pushVertex(current_ring.vertices[0].x, current_vertex.y);
@@ -138,11 +157,14 @@ function closeRing(x, y) {
             current_ring.vertices.pop();
             current_vertex = current_ring.lastVertex();
             current_direction = current_direction == "horizontal" ? "vertical" : "horizontal";
+            closeRing();
         } else {
-            addVertex(x, y);
+            if (addVertex(x, y)) {
+                closeRing();
+            }
         }
-        closeRing();
     }
+    updateTextInfo();
 }
 
 function coordWindowToReal(e) {
@@ -179,24 +201,21 @@ function drawIndicateInfo(x, y) {
     clearCanvas(ctx_mask);
     var c = candidateVertex(x, y);
 
+    var valid = checkCandidateVertexValid(c.x, c.y);
+
     if (current_ring != null && current_ring.vertices.length >= 2) {
         ctx_mask.save();
         ctx_mask.lineWidth = line_width;
-        ctx_mask.strokeStyle = '#e0e0e0';
+        ctx_mask.strokeStyle = valid[1] ? '#e0e0e0' : '#ffccbc';
         ctx_mask.beginPath();
         var p = current_vertex;
         var p0 = current_ring.vertices[0];
-        var direction = current_direction;
         if (current_ring.vertices.length % 2 == 0) {
             p = c;
-            direction = current_direction == "horizontal" ? "vertical" : "horizontal";
         }
+        var p1 = candidateVertex2(c.x, c.y);
         ctx_mask.moveTo(p.x, p.y);
-        if (direction == "horizontal") {
-            ctx_mask.lineTo(p0.x, p.y);
-        } else {
-            ctx_mask.lineTo(p.x, p0.y);
-        }
+        ctx_mask.lineTo(p1.x, p1.y);
         ctx_mask.lineTo(p0.x, p0.y);
         ctx_mask.stroke();
         ctx_mask.restore();
@@ -205,7 +224,7 @@ function drawIndicateInfo(x, y) {
     if (current_vertex != null) {
         ctx_mask.save();
         ctx_mask.lineWidth = line_width;
-        ctx_mask.strokeStyle = '#d84315';
+        ctx_mask.strokeStyle = valid[0] ? '#558b2f' : '#d84315';
         ctx_mask.beginPath();
         ctx_mask.moveTo(current_vertex.x, current_vertex.y);
         ctx_mask.lineTo(c.x, c.y);
@@ -247,7 +266,103 @@ function candidateVertex(x, y) {
     }
 }
 
+function candidateVertex2(x, y) {
+    // 输入的是经过candidateVertex计算的坐标
+    // 输入插入的坐标点(自动补全的灰色线的拐弯点)
+    if (y == undefined) {
+        var p = current_ring.vertices[current_ring.vertices.length - 2];
+        var q = current_ring.vertices[0];
+        if (current_direction == "horizontal") {
+            return {
+                x: p.x,
+                y: q.y
+            };
+        } else {
+            return {
+                x: q.x,
+                y: p.y
+            }
+        }
+    } else {
+        var p = current_vertex;
+        var p0 = current_ring.vertices[0];
+        var direction = current_direction;
+        if (current_ring.vertices.length % 2 == 0) {
+            p = {
+                x: x,
+                y: y
+            };
+            direction = current_direction == "horizontal" ? "vertical" : "horizontal";
+        }
+        if (direction == "horizontal") {
+            return {
+                x: p0.x,
+                y: p.y
+            };
+        } else {
+            return {
+                x: p.x,
+                y: p0.y
+            };
+        }
+    }
+}
+
+function checkCandidateVertexValid(x, y) {
+    // 输入: candidateVertex函数计算后的坐标
+    // 不能与当前多边形内已有任何边严格相交，触碰、重合可以
+    if (current_vertex == null) {
+        return [true, true];
+    }
+    var r1 = true,
+        r2 = true;
+    var c = {
+        x: x,
+        y: y
+    }
+
+    var p = current_vertex;
+    var p0 = current_ring.vertices[0];
+    if (current_ring.vertices.length % 2 == 0) {
+        p = c;
+    }
+    var p1 = candidateVertex2(c.x, c.y);
+
+    for (var i = 0; i < current_polygon.regions.length; i++) {
+        var region = current_polygon.regions[i];
+        var rings = region.outerRing.concat(region.innerRings);
+        for (var j = 0; j < rings.length; j++) {
+            var ring = rings[j];
+            for (var k = 0; k < ring.vertices.length - 1; k++) {
+                if (intersectionTest(current_vertex, c, ring.vertices[k], ring.vertices[k + 1]) == 'intersect') {
+                    r1 = false;
+                }
+                if (intersectionTest(p, p1, ring.vertices[k], ring.vertices[k + 1]) == 'intersect' || intersectionTest(p0, p1, ring.vertices[k], ring.vertices[k + 1]) == 'intersect') {
+                    r2 = false;
+                }
+            }
+            if (ring.closed) {
+                if (intersectionTest(current_vertex, c, ring.vertices[0], ring.lastVertex()) == 'intersect') {
+                    r1 = false;
+                }
+                if (intersectionTest(p, p1, ring.vertices[0], ring.lastVertex()) == 'intersect' || intersectionTest(p0, p1, ring.vertices[0], ring.lastVertex()) == 'intersect') {
+                    r2 = false;
+                }
+            }
+        }
+    }
+    return [r1, r2];
+}
+
 function saveImage() {
     var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-    window.location.href=image;
+    window.location.href = image;
+}
+
+function updateTextInfo() {
+    var str = current_polygon.print(true);
+    str = str.split('\n').join('<br>');
+    str = str.split('\t').join('&nbsp;&nbsp;');
+
+    $('#info').html(str);
 }
