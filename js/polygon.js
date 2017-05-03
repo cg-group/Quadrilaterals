@@ -97,11 +97,37 @@ Object.assign(Region.prototype, {
     },
 
     draw: function(context) {
-        for (var i = 0; i < this.outerRing.length; i++) {
-            this.outerRing[i].draw(context, true);
+        if (this.outerRing.length == 0) {
+            return;
         }
+        // 1. fill
+        context.save();
+        context.shadowColor = "rgba(0,0,0,0.3)";
+        context.shadowOffsetY = 2 * CANVAS_SCALE;
+        context.shadowOffsetX = 1 * CANVAS_SCALE;
+        context.shadowBlur = 5 * CANVAS_SCALE;
+        context.fillStyle = this.outerRing[0].color;
+
+        context.beginPath();
+
+        this.outerRing[0].draw(context);
         for (var i = 0; i < this.innerRings.length; i++) {
-            this.innerRings[i].draw(context, false);
+            this.innerRings[i].draw(context);
+        }
+
+        context.fill('evenodd');
+        context.restore();
+
+        // 2. stroke
+        this.outerRing[0].drawPath(context);
+        for (var i = 0; i < this.innerRings.length; i++) {
+            this.innerRings[i].drawPath(context);
+        }
+
+        // 3. vertices
+        this.outerRing[0].drawVertices(context);
+        for (var i = 0; i < this.innerRings.length; i++) {
+            this.innerRings[i].drawVertices(context);
         }
     },
 
@@ -125,6 +151,7 @@ function Ring() {
     this.vertices = [];
     this.closed = false;
     this.color = generateRandomColor();
+    this.isOuterRing = true;
     this.type = "Ring";
 }
 
@@ -167,6 +194,7 @@ Object.assign(Ring.prototype, {
 
     close: function() {
         this.closed = true;
+        // this.sort();
     },
 
     lastVertex: function() {
@@ -175,31 +203,55 @@ Object.assign(Ring.prototype, {
         }
     },
 
-    draw: function(context, fill) {
+    // sort: function() {
+    //     // 事实上，只需要判断当前是不是正确的顺序就行,因为如果多边形合法，那么相当于已经排好了
+    //     // 如果顺序不正确，就使用this.vertices.reverse();颠倒一下数组
+    //
+    //     var isClockwise;// @TODO
+    //
+    //     if (!(this.isOuterRing ^ isClockwise)) {
+    //         this.vertices.reverse();
+    //     }
+    // },
+
+    draw: function(context) {
         if (!this.vertices.length) {
             return;
         }
-        context.save();
-        context.lineWidth = CANVAS_SCALE;
-        context.strokeStyle = "black";
-        context.fillStyle = this.color;
-        context.beginPath();
-        context.moveTo(this.vertices[0].x, this.vertices[0].y);
-        for (var i = 1; i < this.vertices.length; i++) {
-            context.lineTo(this.vertices[i].x, this.vertices[i].y);
-        }
+
         if (this.closed) {
+            context.moveTo(this.vertices[0].x, this.vertices[0].y);
+            for (var i = 1; i < this.vertices.length; i++) {
+                context.lineTo(this.vertices[i].x, this.vertices[i].y);
+            }
             context.closePath();
         }
-        context.stroke();
-        if (this.closed) {
-            if (!fill) {
-                // @TODO: 这样做可能会产生bug?
-                ctx.fillStyle = "white";
-            }
-            context.fill();
+    },
+
+    drawPath: function(context) {
+        if (!this.vertices.length) {
+            return;
         }
-        context.restore();
+
+        if (!this.closed) {
+            context.save();
+            context.lineWidth = CANVAS_SCALE;
+            context.strokeStyle = "black";
+            context.beginPath();
+            context.moveTo(this.vertices[0].x, this.vertices[0].y);
+            for (var i = 1; i < this.vertices.length; i++) {
+                context.lineTo(this.vertices[i].x, this.vertices[i].y);
+            }
+            context.stroke();
+            context.restore();
+        }
+    },
+
+    drawVertices: function(context) {
+        if (!this.vertices.length) {
+            return;
+        }
+
         for (var i = 0; i < this.vertices.length; i++) {
             this.vertices[i].draw(context, '#009688', 2);
         }

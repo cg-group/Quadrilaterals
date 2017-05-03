@@ -4,15 +4,18 @@ var current_ring;
 var current_vertex;
 var current_direction;
 
-(function resetAll() {
+function resetAll() {
     current_polygon = new Polygon();
     current_region = new Region();
     current_ring = new Ring();
     current_vertex = null;
     current_direction = null;
+    current_ring.isOuterRing = true;
     current_polygon.pushRegion(current_region);
     current_region.setOuterRing(current_ring);
-})();
+    clearCanvas(ctx);
+    clearCanvas(ctx_mask);
+}
 
 function canvasMouseMove(e) {
     var tmp = coordWindowToReal(e);
@@ -26,7 +29,7 @@ function canvasMouseUp(e) {
     var tmp = coordWindowToReal(e);
     var x = tmp.x;
     var y = tmp.y;
-	var c = candidateVertex(x, y);
+    var c = candidateVertex(x, y);
 
     if (e.which == 1) {
         // 左键添加顶点
@@ -39,8 +42,8 @@ function canvasMouseUp(e) {
 }
 
 function canvasMouseOut(e) {
-	// console.log(e);
-	clearCanvas(ctx_mask);
+    // console.log(e);
+    clearCanvas(ctx_mask);
 }
 
 function keyEvent(e) {
@@ -50,6 +53,13 @@ function keyEvent(e) {
             closeRing();
             break;
     }
+}
+
+function addRandomPoint() {
+    var x = Math.floor(Math.random() * CANVAS_SIZE.width);
+    var y = Math.floor(Math.random() * CANVAS_SIZE.height);
+    var c = candidateVertex(x, y);
+    addVertex(c.x, c.y);
 }
 
 function addVertex(x, y) {
@@ -91,11 +101,13 @@ function createNewRing(x, y) {
         current_polygon.pushRegion(r);
         current_region = r;
         var ring = new Ring();
+        ring.isOuterRing = true;
         r.setOuterRing(ring);
         current_ring = ring;
     } else {
         // 在某区域内
         var ring = new Ring();
+        ring.isOuterRing = false;
         current_region.pushInnerRing(ring);
         current_ring = ring;
     }
@@ -103,7 +115,7 @@ function createNewRing(x, y) {
 
 function closeRing(x, y) {
     // 封闭当前多边形环
-    if (current_ring.vertices.length <= 1) {
+    if (current_ring == null || current_ring.vertices.length <= 1) {
         return;
     }
     if (current_ring.vertices.length % 2 == 1) {
@@ -122,10 +134,13 @@ function closeRing(x, y) {
         current_ring = null;
     } else {
         // console.log('边数是奇数，不能封闭');
-        // current_ring.vertices.pop();
-        // current_vertex = current_ring.lastVertex();
-        // current_direction = current_direction == "horizontal" ? "vertical" : "horizontal";
-		addVertex(x, y);
+        if (y == undefined) {
+            current_ring.vertices.pop();
+            current_vertex = current_ring.lastVertex();
+            current_direction = current_direction == "horizontal" ? "vertical" : "horizontal";
+        } else {
+            addVertex(x, y);
+        }
         closeRing();
     }
 }
@@ -164,28 +179,28 @@ function drawIndicateInfo(x, y) {
     clearCanvas(ctx_mask);
     var c = candidateVertex(x, y);
 
-	if (current_ring != null && current_ring.vertices.length >= 2) {
-		ctx_mask.save();
-		ctx_mask.lineWidth = line_width;
-		ctx_mask.strokeStyle = '#e0e0e0';
-		ctx_mask.beginPath();
-		var p = current_vertex;
-		var p0 = current_ring.vertices[0];
-		var direction = current_direction;
-		if (current_ring.vertices.length % 2 == 0) {
-			p = c;
-			direction = current_direction == "horizontal" ? "vertical" : "horizontal";
-		}
-		ctx_mask.moveTo(p.x, p.y);
-		if (direction == "horizontal") {
-			ctx_mask.lineTo(p0.x, p.y);
-		} else {
-			ctx_mask.lineTo(p.x, p0.y);
-		}
-		ctx_mask.lineTo(p0.x, p0.y);
-		ctx_mask.stroke();
-		ctx_mask.restore();
-	}
+    if (current_ring != null && current_ring.vertices.length >= 2) {
+        ctx_mask.save();
+        ctx_mask.lineWidth = line_width;
+        ctx_mask.strokeStyle = '#e0e0e0';
+        ctx_mask.beginPath();
+        var p = current_vertex;
+        var p0 = current_ring.vertices[0];
+        var direction = current_direction;
+        if (current_ring.vertices.length % 2 == 0) {
+            p = c;
+            direction = current_direction == "horizontal" ? "vertical" : "horizontal";
+        }
+        ctx_mask.moveTo(p.x, p.y);
+        if (direction == "horizontal") {
+            ctx_mask.lineTo(p0.x, p.y);
+        } else {
+            ctx_mask.lineTo(p.x, p0.y);
+        }
+        ctx_mask.lineTo(p0.x, p0.y);
+        ctx_mask.stroke();
+        ctx_mask.restore();
+    }
 
     if (current_vertex != null) {
         ctx_mask.save();
@@ -230,4 +245,9 @@ function candidateVertex(x, y) {
             };
         }
     }
+}
+
+function saveImage() {
+    var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+    window.location.href=image;
 }
