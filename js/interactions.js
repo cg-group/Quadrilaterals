@@ -364,7 +364,7 @@ function saveImage() {
 }
 
 function updateTextInfo() {
-    var str = current_polygon.print(true);
+    var str = current_polygon.print(true, true);
     str = str.split('\n').join('<br>');
     str = str.split('\t').join('&nbsp;&nbsp;');
     str = str.split('Region').join('<orange>Region</orange>');

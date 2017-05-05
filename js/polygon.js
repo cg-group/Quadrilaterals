@@ -1,6 +1,10 @@
+var ALL_POLYGON = [];
+
 function Polygon() {
     this.regions = [];
     this.type = "Polygon";
+    this.id = ALL_POLYGON.length;
+    ALL_POLYGON.push(this);
 }
 
 Object.assign(Polygon.prototype, {
@@ -34,11 +38,14 @@ Object.assign(Polygon.prototype, {
         }
     },
 
-    print: function(do_not_print) {
+    print: function(do_not_print, html) {
         var str = '';
         for (var i = 0; i < this.regions.length; i++) {
             str += 'Region ' + i + ':\n';
-            str += this.regions[i].print(true);
+            str += this.regions[i].print(true, html);
+        }
+		if (html) {
+            str = '<polygon data-id="' + this.id + '">' + str + '</polygon>';
         }
         if (!do_not_print) {
             console.log(str);
@@ -47,10 +54,14 @@ Object.assign(Polygon.prototype, {
     }
 });
 
+var ALL_REGION = [];
+
 function Region() {
     this.outerRing = [];
     this.innerRings = [];
     this.type = "Region";
+    this.id = ALL_REGION.length;
+    ALL_REGION.push(this);
 }
 
 Object.assign(Region.prototype, {
@@ -93,7 +104,7 @@ Object.assign(Region.prototype, {
         // 否则，如果在外环内，那么是内部
         // @TODO
 
-        return "out";
+        return "in";
     },
 
     draw: function(context) {
@@ -131,14 +142,17 @@ Object.assign(Region.prototype, {
         }
     },
 
-    print: function(do_not_print) {
+    print: function(do_not_print, html) {
         var str = '\tOuter Ring:\n';
-        str += '\t' + this.outerRing[0].print(true) + '\n';
+        str += '\t' + this.outerRing[0].print(true, html) + '\n';
         if (this.innerRings.length) {
             str += '\tInner Rings:\n';
         }
         for (var i = 0; i < this.innerRings.length; i++) {
-            str += '\t' + this.innerRings[i].print(true) + '\n';
+            str += '\t' + this.innerRings[i].print(true, html) + '\n';
+        }
+        if (html) {
+            str = '<region data-id="' + this.id + '">' + str + '</region>';
         }
         if (!do_not_print) {
             console.log(str);
@@ -147,12 +161,16 @@ Object.assign(Region.prototype, {
     }
 });
 
+var ALL_RING = [];
+
 function Ring() {
     this.vertices = [];
     this.closed = false;
     this.color = generateRandomColor();
     this.isOuterRing = true;
     this.type = "Ring";
+    this.id = ALL_RING.length;
+    ALL_RING.push(this);
 }
 
 Object.assign(Ring.prototype, {
@@ -257,16 +275,19 @@ Object.assign(Ring.prototype, {
         }
     },
 
-    print: function(do_not_print) {
+    print: function(do_not_print, html) {
         var str = '';
         for (var i = 0; i < this.vertices.length; i++) {
-            str += this.vertices[i].print(true);
+            str += this.vertices[i].print(true, html);
             if (i != this.vertices.length - 1) {
                 str += '->';
             }
         }
         if (this.closed) {
             str += ' closed';
+        }
+		if (html) {
+            str = '<ring data-id="' + this.id + '">' + str + '</ring>';
         }
         if (!do_not_print) {
             console.log(str);
@@ -275,10 +296,14 @@ Object.assign(Ring.prototype, {
     }
 });
 
+var ALL_POINT2D = [];
+
 function Point2D(x, y) {
     this.x = x || 0;
     this.y = y || 0;
     this.type = "Point2D";
+    this.id = ALL_POINT2D.length;
+    ALL_POINT2D.push(this);
 }
 
 Object.assign(Point2D.prototype, {
@@ -307,8 +332,11 @@ Object.assign(Point2D.prototype, {
 
     },
 
-    print: function(do_not_print) {
+    print: function(do_not_print, html) {
         var str = '(' + this.x + ', ' + this.y + ')';
+        if (html) {
+            str = '<point2d data-id="' + this.id + '">' + str + '</point2d>';
+        }
         if (!do_not_print) {
             console.log(str);
         }
