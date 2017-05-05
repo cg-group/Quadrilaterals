@@ -7,7 +7,7 @@ function toLeftTest(p, q, s) {
         q.x * s.y - q.y * s.x +
         s.x * p.y - s.y * p.x;
 }
-
+  
 function intersectionTest(p, q, s, t) {
     // 判断线段pq与st相交情况
 
