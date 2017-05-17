@@ -103,8 +103,28 @@ Object.assign(Region.prototype, {
         // 如果在任意一个内环内，那么就是外部
         // 否则，如果在外环内，那么是内部
         // @TODO
-
-        return "in";
+        var status="in";
+        var change=false;
+        for(var i=0;i<this.innerRings.length;i++){
+            if(this.innerRings[i].includingPoint(x,y)=="in")//先检查内环
+            {
+                if(!change)
+               {
+                status="out";
+                change=true;
+                alert("out");
+               } 
+            }
+        }
+        if(change)
+            return status;
+        if(this.outerRing[0].includingPoint(x,y)=="out")
+        {
+            status="out";
+            change=true;
+            alert("out");
+        }        
+        return status;
     },
 
     draw: function(context) {
@@ -208,6 +228,18 @@ Object.assign(Ring.prototype, {
 
     includingPoint: function(x, y) {
         // @TODO
+        var crossings=0;
+        for(var i=0;i<this.vertices.length-1;i++){
+            var slope=(this.vertices[i+1].y-this.vertices[i].y)/(this.vertices[i+1].x-this.vertices[i].x);
+            var cond1=(this.vertices[i].x<=x)&&(x<this.vertices[i+1].x);
+            var cond2=(this.vertices[i+1].x<=x)&&(x<this.vertices[i].x);
+            var above=(y<slope*(x-this.vertices[i].x)+this.vertices[i].y);
+            if((cond1||cond2)&&above)  crossings++;    
+        }
+        if(crossings%2!=0)
+            return "in";
+        else
+            return "out";
     },
 
     close: function() {
@@ -343,3 +375,4 @@ Object.assign(Point2D.prototype, {
         return str;
     }
 });
+
