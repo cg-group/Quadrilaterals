@@ -108,7 +108,6 @@ function createNewRing(x, y) {
             break;
         }
     }
-    console.log(is_in);
     if (is_in == -1) {
         // 不在任何区域内，或在边界上
         var r = new Region();
@@ -373,7 +372,7 @@ function updateTextInfo() {
     str = str.split('Outer Ring').join('<green>Outer Ring</green>');
     str = str.split('Inner Rings').join('<green>Inner Rings</green>');
     str = str.split('->').join('<red>-&gt;</red>');
-    str = str.split('closed').join('<blue>closed</blue>');
+    str = str.split('closed').join('<indigo>closed</indigo>');
 
     $('#info').html(str);
 }

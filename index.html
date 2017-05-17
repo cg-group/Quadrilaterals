@@ -28,19 +28,21 @@
     </div>
     <main class="container">
         <div class="row" style="margin-bottom: 0;">
-            <div class="col s8" style="line-height: 0;padding: 0;position: relative;">
+            <div id="canvas-container" class="col s8" style="line-height: 0;padding: 0;position: relative;">
                 <canvas id="canvas" width="2000px" height="2000px"></canvas>
                 <canvas id="mask" width="2000px" height="2000px" style="position: absolute;top: 0; left: 0;"></canvas>
             </div>
             <div class="col s4">
-                <a class="hvr-bounce-to-right hvr-forward waves-effect waves-light hvr-red" onclick="resetAll();">Reset</a>
-                <a class="hvr-bounce-to-right hvr-forward waves-effect waves-light" onclick="addRandomPoint();">Random Point</a>
-                <a class="hvr-bounce-to-right hvr-forward waves-effect waves-light" onclick="closeRing();">Close Ring</a>
-                <a class="hvr-bounce-to-right hvr-forward waves-effect waves-light hvr-orange" onclick="saveImage();">Save Image</a>
-                <div class="divider"></div>
-                <a class="hvr-bounce-to-right hvr-forward waves-effect waves-light">Something</a>
-                <a class="hvr-bounce-to-right hvr-forward waves-effect waves-light">Something</a>
-                <p id="info"></p>
+                <div id="buttons">
+                    <a class="hvr-bounce-to-right hvr-forward waves-effect waves-light hvr-red" onclick="resetAll();">Reset</a>
+                    <a class="hvr-bounce-to-right hvr-forward waves-effect waves-light" onclick="addRandomPoint();">Random Point</a>
+                    <a class="hvr-bounce-to-right hvr-forward waves-effect waves-light" onclick="closeRing();">Close Ring</a>
+                    <a class="hvr-bounce-to-right hvr-forward waves-effect waves-light hvr-orange" onclick="saveImage();">Save Image</a>
+                    <div class="divider"></div>
+                    <a class="hvr-bounce-to-right hvr-forward waves-effect waves-light">Something</a>
+                    <a class="hvr-bounce-to-right hvr-forward waves-effect waves-light">Something</a>
+                </div>
+                <div id="info"></div>
             </div>
         </div>
     </main>
@@ -97,8 +99,14 @@
             window.addEventListener('keyup', keyEvent);
 
             resetAll();
-
+            resizeInfoContainer();
         });
+
+        function resizeInfoContainer() {
+            $('#info').height($('#canvas-container').height() - $('#buttons').height());
+        }
+
+        $(window).resize(resizeInfoContainer);
     </script>
 
 </body>

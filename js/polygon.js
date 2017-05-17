@@ -103,18 +103,13 @@ Object.assign(Region.prototype, {
         // 如果在任意一个内环内，那么就是外部
         // 否则，如果在外环内，那么是内部
         for (var i = 0; i < this.innerRings.length; i++) {
-            if (this.innerRings[i].includingPoint(x, y) == "in") //先检查内环
-            {
-                console.log("inner:", i);
+            if (this.innerRings[i].includingPoint(x, y) == "in") {
                 return "out";
             }
         }
         if (this.outerRing[0].includingPoint(x, y) == "in") {
-            console.log("outer: in");
             return "in";
         }
-        console.log("outer: out");
-
         return "out";
     },
 

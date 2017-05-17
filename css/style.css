@@ -346,6 +346,6 @@ nav {
 
 #info {
     font-size: 10px;
-    max-height: 50%;
+    overflow: auto;
     cursor: default;
 }
