@@ -44,7 +44,7 @@ Object.assign(Polygon.prototype, {
             str += 'Region ' + i + ':\n';
             str += this.regions[i].print(true, html);
         }
-		if (html) {
+        if (html) {
             str = '<polygon data-id="' + this.id + '">' + str + '</polygon>';
         }
         if (!do_not_print) {
@@ -102,29 +102,20 @@ Object.assign(Region.prototype, {
         // 判断是否包含某个坐标点，返回 in out 或者 boundary
         // 如果在任意一个内环内，那么就是外部
         // 否则，如果在外环内，那么是内部
-        // @TODO
-        var status="in";
-        var change=false;
-        for(var i=0;i<this.innerRings.length;i++){
-            if(this.innerRings[i].includingPoint(x,y)=="in")//先检查内环
+        for (var i = 0; i < this.innerRings.length; i++) {
+            if (this.innerRings[i].includingPoint(x, y) == "in") //先检查内环
             {
-                if(!change)
-               {
-                status="out";
-                change=true;
-                alert("out");
-               } 
+                console.log("inner:", i);
+                return "out";
             }
         }
-        if(change)
-            return status;
-        if(this.outerRing[0].includingPoint(x,y)=="out")
-        {
-            status="out";
-            change=true;
-            alert("out");
-        }        
-        return status;
+        if (this.outerRing[0].includingPoint(x, y) == "in") {
+            console.log("outer: in");
+            return "in";
+        }
+        console.log("outer: out");
+
+        return "out";
     },
 
     draw: function(context) {
@@ -227,16 +218,16 @@ Object.assign(Ring.prototype, {
     },
 
     includingPoint: function(x, y) {
-        // @TODO
-        var crossings=0;
-        for(var i=0;i<this.vertices.length-1;i++){
-            var slope=(this.vertices[i+1].y-this.vertices[i].y)/(this.vertices[i+1].x-this.vertices[i].x);
-            var cond1=(this.vertices[i].x<=x)&&(x<this.vertices[i+1].x);
-            var cond2=(this.vertices[i+1].x<=x)&&(x<this.vertices[i].x);
-            var above=(y<slope*(x-this.vertices[i].x)+this.vertices[i].y);
-            if((cond1||cond2)&&above)  crossings++;    
+        var crossings = 0;
+        var n = this.vertices.length;
+        for (var i = 0; i < n; i++) {
+            var slope = (this.vertices[(i + 1) % n].y - this.vertices[i].y) / (this.vertices[(i + 1) % n].x - this.vertices[i].x);
+            var cond1 = (this.vertices[i].x <= x) && (x < this.vertices[(i + 1) % n].x);
+            var cond2 = (this.vertices[(i + 1) % n].x <= x) && (x < this.vertices[i].x);
+            var above = (y < slope * (x - this.vertices[i].x) + this.vertices[i].y);
+            if ((cond1 || cond2) && above) crossings++;
         }
-        if(crossings%2!=0)
+        if (crossings % 2 != 0)
             return "in";
         else
             return "out";
@@ -318,7 +309,7 @@ Object.assign(Ring.prototype, {
         if (this.closed) {
             str += ' closed';
         }
-		if (html) {
+        if (html) {
             str = '<ring data-id="' + this.id + '">' + str + '</ring>';
         }
         if (!do_not_print) {
@@ -375,4 +366,3 @@ Object.assign(Point2D.prototype, {
         return str;
     }
 });
-

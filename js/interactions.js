@@ -108,6 +108,7 @@ function createNewRing(x, y) {
             break;
         }
     }
+    console.log(is_in);
     if (is_in == -1) {
         // 不在任何区域内，或在边界上
         var r = new Region();
@@ -121,6 +122,7 @@ function createNewRing(x, y) {
         // 在某区域内
         var ring = new Ring();
         ring.isOuterRing = false;
+        current_region = regions[is_in];
         current_region.pushInnerRing(ring);
         current_ring = ring;
     }
