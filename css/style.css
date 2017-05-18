@@ -43,8 +43,12 @@ main {
     margin-bottom: 1rem!important;
 }
 
-canvas {
+#canvas-container {
     border: 2px solid black;
+}
+
+canvas {
+    /*border: 20px solid black;*/
     /*height: 100%;*/
     width: 100%;
     cursor: crosshair;
@@ -54,7 +58,7 @@ canvas {
     background-color: white;
 }
 
-.hvr-bounce-to-right:active, .hvr-bounce-to-right:focus, .hvr-bounce-to-right:hover {
+.hvr-bounce-to-right.active, .hvr-bounce-to-right:focus, .hvr-bounce-to-right:hover {
     color: #fff;
 }
 
@@ -72,7 +76,7 @@ canvas {
     -moz-osx-font-smoothing: grayscale;
 }
 
-.hvr-bounce-to-right:active:before, .hvr-bounce-to-right:focus:before, .hvr-bounce-to-right:hover:before {
+.hvr-bounce-to-right.active:before, .hvr-bounce-to-right:focus:before, .hvr-bounce-to-right:hover:before {
     -webkit-transform: scaleX(1);
     transform: scaleX(1);
     -webkit-transition-timing-function: cubic-bezier(0.52, 1.64, .37, .66);
@@ -133,7 +137,7 @@ canvas {
     transition-property: transform;
 }
 
-.hvr-forward:hover, .hvr-forward:focus, .hvr-forward:active {
+.hvr-forward:hover, .hvr-forward:focus, .hvr-forward.active {
     -webkit-transform: translateX(8px);
     transform: translateX(8px);
 }
@@ -190,7 +194,7 @@ canvas {
     box-shadow: 0 0 1px transparent;
 }
 
-.hvr-bob:hover, .hvr-bob:focus, .hvr-bob:active {
+.hvr-bob:hover, .hvr-bob:focus, .hvr-bob.active {
     -webkit-animation-name: hvr-bob-float, hvr-bob;
     animation-name: hvr-bob-float, hvr-bob;
     -webkit-animation-duration: .3s, 1.5s;
@@ -219,7 +223,7 @@ canvas {
     transition-property: transform;
 }
 
-.hvr-rotate:hover, .hvr-rotate:focus, .hvr-rotate:active {
+.hvr-rotate:hover, .hvr-rotate:focus, .hvr-rotate.active {
     -webkit-transform: rotate(8deg);
     transform: rotate(8deg);
 }
@@ -236,7 +240,7 @@ canvas {
     transition-property: transform;
 }
 
-.hvr-grow-rotate:hover, .hvr-grow-rotate:focus, .hvr-grow-rotate:active {
+.hvr-grow-rotate:hover, .hvr-grow-rotate:focus, .hvr-grow-rotate.active {
     -webkit-transform: scale(1.1) rotate(8deg);
     transform: scale(1.1) rotate(8deg);
 }
@@ -348,4 +352,25 @@ nav {
     font-size: 10px;
     overflow: auto;
     cursor: default;
+}
+
+#buttons {
+    min-width: 270px;
+}
+
+.vertex {
+    background-color: #009688;
+    height: 6px;
+    width: 6px;
+    position: absolute;
+    /*border-radius: 50%;*/
+    transform: translateX(-50%) translateY(-50%);
+    cursor: move;
+}
+
+.vertex:hover {
+    background-color: white;
+    border: 2px solid #009688;
+    height: 12px;
+    width: 12px;
 }

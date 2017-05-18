@@ -3,13 +3,20 @@ var current_region;
 var current_ring;
 var current_vertex;
 var current_direction;
+var in_tilt_mode;
 
 function resetAll() {
+    ALL_POLYGON = [];
+    ALL_REGION = [];
+    ALL_RING = [];
+    ALL_POINT2D = [];
+
     current_polygon = new Polygon();
     current_region = new Region();
     current_ring = new Ring();
     current_vertex = null;
     current_direction = null;
+    triggerTiltMode(false);
     current_ring.isOuterRing = true;
     current_polygon.pushRegion(current_region);
     current_region.setOuterRing(current_ring);
@@ -19,6 +26,7 @@ function resetAll() {
 }
 
 function canvasMouseMove(e) {
+    if (in_tilt_mode) return;
     var tmp = coordWindowToReal(e);
     var x = tmp.x;
     var y = tmp.y;
@@ -27,6 +35,7 @@ function canvasMouseMove(e) {
 
 function canvasMouseUp(e) {
     // console.log(e);
+    if (in_tilt_mode) return;
     var tmp = coordWindowToReal(e);
     var x = tmp.x;
     var y = tmp.y;
@@ -52,9 +61,16 @@ function canvasMouseOut(e) {
 function keyEvent(e) {
     // console.log(e.which);
     switch (e.which) {
-        // case 32: // space
-        //     closeRing();
-        //     break;
+        case 32: // space
+            triggerTiltMode();
+            break;
+        case 82: // R
+            $('#reset-btn').addClass('active');
+            setTimeout(function() {
+                $('#reset-btn').removeClass('active');
+                resetAll();
+            }, 800);
+            break;
     }
 }
 
@@ -388,4 +404,43 @@ function updateTextInfo() {
     str = str.split('closed').join('<indigo>closed</indigo>');
 
     $('#info').html(str);
+}
+
+function triggerTiltMode(enable) {
+    if (!(current_ring === null) && !(enable === false)) {
+        // 必须是封闭的状态
+        $('#tilt-mode-btn').addClass('active');
+        Materialize.toast('当前环未封闭', 800);
+        setTimeout(function() {
+            $('#tilt-mode-btn').removeClass('active');
+        }, 800);
+        return;
+    }
+    if (enable == undefined) {
+        in_tilt_mode ^= true;
+    } else {
+        in_tilt_mode = enable;
+    }
+    if (in_tilt_mode) {
+        $('#tilt-mode-btn').addClass('active');
+        clearCanvas(ctx_mask);
+        showVertices();
+    } else {
+        $('#tilt-mode-btn').removeClass('active');
+        hideVertices();
+    }
+}
+
+function showVertices() {
+    ALL_POINT2D.forEach(function(e, i) {
+        var left = 100 * e.x / CANVAS_SIZE.width + '%';
+        var top = 100 * e.y / CANVAS_SIZE.height + '%';
+        $('#canvas-container').append(
+            $('<div>').addClass('vertex').css('left', left).css('top', top)
+        );
+    });
+}
+
+function hideVertices() {
+    $('.vertex').remove();
 }
