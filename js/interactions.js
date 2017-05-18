@@ -45,15 +45,16 @@ function canvasMouseUp(e) {
 
 function canvasMouseOut(e) {
     // console.log(e);
+    if (e.screenX == 0 && e.screenY == 0) return;
     clearCanvas(ctx_mask);
 }
 
 function keyEvent(e) {
     // console.log(e.which);
     switch (e.which) {
-        case 32: // space
-            closeRing();
-            break;
+        // case 32: // space
+        //     closeRing();
+        //     break;
     }
 }
 
@@ -129,7 +130,7 @@ function createNewRing(x, y) {
 
 function closeRing(x, y) {
     // 封闭当前多边形环
-    if (current_ring == null || current_ring.vertices.length <= 1) {
+    if (current_ring == null || current_ring.vertices.length <= 1 || (current_ring.vertices.length == 2 && x == undefined)) {
         return;
     }
     var valid = checkCandidateVertexValid(x, y);
@@ -166,6 +167,7 @@ function closeRing(x, y) {
         }
     }
     updateTextInfo();
+    clearCanvas(ctx_mask);
 }
 
 function coordWindowToReal(e) {
@@ -332,7 +334,12 @@ function checkCandidateVertexValid(x, y) {
         p = c;
     }
     var p1 = candidateVertex2(c.x, c.y);
+    // p0: ring的起点
+    // p1: 封闭多边形前最后一个顶点
+    // p: 当前已经确认的最后一个顶点(黑色)
+    // c: 鼠标绿点
 
+    // current_ring.vertices.length % 2 == 0的时候，首先从ring最后一点连到p，再从p连到p1，再从p1连到p0
     for (var i = 0; i < current_polygon.regions.length; i++) {
         var region = current_polygon.regions[i];
         var rings = region.outerRing.concat(region.innerRings);
@@ -341,6 +348,9 @@ function checkCandidateVertexValid(x, y) {
             for (var k = 0; k < ring.vertices.length - 1; k++) {
                 if (intersectionTest(current_vertex, c, ring.vertices[k], ring.vertices[k + 1]) == 'intersect') {
                     r1 = false;
+                    if (current_ring.vertices.length % 2 == 0) {
+                        r2 = false;
+                    }
                 }
                 if (intersectionTest(p, p1, ring.vertices[k], ring.vertices[k + 1]) == 'intersect' || intersectionTest(p0, p1, ring.vertices[k], ring.vertices[k + 1]) == 'intersect') {
                     r2 = false;
@@ -349,6 +359,9 @@ function checkCandidateVertexValid(x, y) {
             if (ring.closed) {
                 if (intersectionTest(current_vertex, c, ring.vertices[0], ring.lastVertex()) == 'intersect') {
                     r1 = false;
+                    if (current_ring.vertices.length % 2 == 0) {
+                        r2 = false;
+                    }
                 }
                 if (intersectionTest(p, p1, ring.vertices[0], ring.lastVertex()) == 'intersect' || intersectionTest(p0, p1, ring.vertices[0], ring.lastVertex()) == 'intersect') {
                     r2 = false;

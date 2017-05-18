@@ -124,7 +124,6 @@ Object.assign(Region.prototype, {
         context.shadowOffsetX = 1 * CANVAS_SCALE;
         context.shadowBlur = 5 * CANVAS_SCALE;
         context.fillStyle = this.outerRing[0].color;
-
         context.beginPath();
 
         this.outerRing[0].draw(context);
@@ -142,10 +141,10 @@ Object.assign(Region.prototype, {
         }
 
         // 3. vertices
-        this.outerRing[0].drawVertices(context);
-        for (var i = 0; i < this.innerRings.length; i++) {
-            this.innerRings[i].drawVertices(context);
-        }
+        // this.outerRing[0].drawVertices(context);
+        // for (var i = 0; i < this.innerRings.length; i++) {
+        //     this.innerRings[i].drawVertices(context);
+        // }
     },
 
     print: function(do_not_print, html) {
