@@ -2,14 +2,14 @@
     font-family: 'Material Icons';
     font-style: normal;
     font-weight: 400;
-    src: local('Material Icons'), local('MaterialIcons-Regular'), url(../font/material-design-icons/1.woff2) format('woff2');
+    src: local('Material Icons'), local('MaterialIcons-Regular'), url(../fonts/material-design-icons/1.woff2) format('woff2');
 }
 
 @font-face {
     font-family: 'Abel';
     font-style: normal;
     font-weight: 400;
-    src: local('Abel'), local('Abel-Regular'), url(../font/material-design-icons/2.woff2) format('woff2');
+    src: local('Abel'), local('Abel-Regular'), url(../fonts/material-design-icons/2.woff2) format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 
@@ -365,12 +365,21 @@ nav {
     position: absolute;
     /*border-radius: 50%;*/
     transform: translateX(-50%) translateY(-50%);
-    cursor: move;
+    cursor: pointer;
+    transition: width 0.3s, height 0.3s, border-radius 0.3s;
 }
 
 .vertex:hover {
+    border: 2px solid #009688;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+}
+
+.vertex.active {
     background-color: white;
     border: 2px solid #009688;
     height: 12px;
     width: 12px;
+    border-radius: 50%;
 }

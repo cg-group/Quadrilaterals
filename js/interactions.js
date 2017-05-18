@@ -4,6 +4,8 @@ var current_ring;
 var current_vertex;
 var current_direction;
 var in_tilt_mode;
+var current_moving_vertex_id;
+var last_time_stamp;
 
 function resetAll() {
     ALL_POLYGON = [];
@@ -26,30 +28,38 @@ function resetAll() {
 }
 
 function canvasMouseMove(e) {
-    if (in_tilt_mode) return;
+    // console.log(1);
     var tmp = coordWindowToReal(e);
     var x = tmp.x;
     var y = tmp.y;
-    drawIndicateInfo(x, y);
+    if (in_tilt_mode) {
+
+    } else {
+        drawIndicateInfo(x, y);
+    }
 }
 
 function canvasMouseUp(e) {
     // console.log(e);
-    if (in_tilt_mode) return;
     var tmp = coordWindowToReal(e);
     var x = tmp.x;
     var y = tmp.y;
-    var c = candidateVertex(x, y);
-
-
-    if (e.which == 1) {
-        // 左键添加顶点
-        addVertex(c.x, c.y);
+    if (in_tilt_mode) {
+        if (last_time_stamp != e.timeStamp) {
+            endMoveVertex();
+        }
     } else {
-        // 其他按键封闭环
-        closeRing(c.x, c.y);
+        var c = candidateVertex(x, y);
+
+        if (e.which == 1) {
+            // 左键添加顶点
+            addVertex(c.x, c.y);
+        } else {
+            // 其他按键封闭环
+            closeRing(c.x, c.y);
+        }
+        canvasMouseMove(e);
     }
-    canvasMouseMove(e);
 }
 
 function canvasMouseOut(e) {
@@ -425,6 +435,7 @@ function triggerTiltMode(enable) {
         $('#tilt-mode-btn').addClass('active');
         clearCanvas(ctx_mask);
         showVertices();
+        current_moving_vertex_id = -1;
     } else {
         $('#tilt-mode-btn').removeClass('active');
         hideVertices();
@@ -435,12 +446,37 @@ function showVertices() {
     ALL_POINT2D.forEach(function(e, i) {
         var left = 100 * e.x / CANVAS_SIZE.width + '%';
         var top = 100 * e.y / CANVAS_SIZE.height + '%';
-        $('#canvas-container').append(
-            $('<div>').addClass('vertex').css('left', left).css('top', top)
-        );
+        var div = $('<div>')
+            .attr('id', 'vertex_' + i)
+            .addClass('vertex')
+            .css('left', left)
+            .css('top', top);
+        div.mouseup(function(e) {
+            last_time_stamp = e.timeStamp;
+            startMoveVertex($(e.target));
+        });
+        $('#canvas-container').append(div);
     });
+    $('canvas').css('cursor', 'default');
 }
 
 function hideVertices() {
     $('.vertex').remove();
+    $('canvas').css('cursor', 'crosshair');
+}
+
+function startMoveVertex($t) {
+    // console.log(id);
+    if (current_moving_vertex_id >= 0) {
+        endMoveVertex();
+    } else {
+        $('.vertex').removeClass('active');
+        $t.addClass('active');
+        current_moving_vertex_id = $t.attr('id').split('_')[1];
+    }
+}
+
+function endMoveVertex() {
+    current_moving_vertex_id = -1;
+    $('.vertex').removeClass('active');
 }

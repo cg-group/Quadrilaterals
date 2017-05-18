@@ -93,10 +93,10 @@
             $('body').on('contextmenu', '#mask', function(e) {
                 return false;
             });
-            mask.addEventListener('mouseup', canvasMouseUp);
-            mask.addEventListener('mousemove', canvasMouseMove);
-            mask.addEventListener('mouseout', canvasMouseOut);
-            window.addEventListener('keyup', keyEvent);
+            $('#canvas-container').mouseup(canvasMouseUp);
+            $('#canvas-container').mousemove(canvasMouseMove);
+            $('#canvas-container').mouseout(canvasMouseOut);
+            $(window).keyup(keyEvent);
 
             resetAll();
             resizeInfoContainer();

@@ -9,6 +9,9 @@ function Polygon() {
 
 Object.assign(Polygon.prototype, {
     setRegions: function(regions) {
+        for (var i = 0; i < regions.length; i++) {
+            regions[i].parent = this.id;
+        }
         this.regions = regions;
         return this;
     },
@@ -29,6 +32,7 @@ Object.assign(Polygon.prototype, {
 
     pushRegion: function(region) {
         this.regions.push(region);
+        region.parent = this.id;
         return this;
     },
 
@@ -66,11 +70,15 @@ function Region() {
 
 Object.assign(Region.prototype, {
     setOuterRing: function(ring) {
+        ring.parent = this.id;
         this.outerRing = [ring];
         return this;
     },
 
     setInnerRings: function(rings) {
+        for (var i = 0; i < rings.length; i++) {
+            rings[i].parent = this.id;
+        }
         this.innerRings = rings;
         return this;
     },
@@ -94,6 +102,7 @@ Object.assign(Region.prototype, {
     },
 
     pushInnerRing: function(ring) {
+        ring.parent = this.id;
         this.innerRings.push(ring);
         return this;
     },
@@ -180,6 +189,9 @@ function Ring() {
 
 Object.assign(Ring.prototype, {
     setVertices: function(vertices) {
+        for (var i = 0; i < vertices.length; i++) {
+            vertices[i].parent = this.id;
+        }
         this.vertices = vertices;
         return this;
     },
@@ -201,12 +213,14 @@ Object.assign(Ring.prototype, {
 
     insertVertex: function(position, x, y) {
         var v = new Point2D(x, y);
+        v.parent = this.id;
         this.vertices.splice(position, 0, v);
         return this;
     },
 
     pushVertex: function(x, y) {
         var v = new Point2D(x, y);
+        v.parent = this.id;
         this.vertices.push(v);
         return this;
     },
@@ -237,17 +251,6 @@ Object.assign(Ring.prototype, {
             return this.vertices[this.vertices.length - 1];
         }
     },
-
-    // sort: function() {
-    //     // 事实上，只需要判断当前是不是正确的顺序就行,因为如果多边形合法，那么相当于已经排好了
-    //     // 如果顺序不正确，就使用this.vertices.reverse();颠倒一下数组
-    //
-    //     var isClockwise;// @TODO
-    //
-    //     if (!(this.isOuterRing ^ isClockwise)) {
-    //         this.vertices.reverse();
-    //     }
-    // },
 
     draw: function(context) {
         if (!this.vertices.length) {
@@ -346,7 +349,6 @@ Object.assign(Point2D.prototype, {
         context.fillStyle = color;
         context.fillRect(this.x - radius, this.y - radius, 2 * radius + 1, 2 * radius + 1);
         context.restore();
-
     },
 
     print: function(do_not_print, html) {
