@@ -5,6 +5,7 @@ var current_vertex;
 var current_direction;
 var in_tilt_mode;
 var current_moving_vertex_id;
+var current_neighbor_vertex_id;
 var last_time_stamp;
 
 function resetAll() {
@@ -33,7 +34,9 @@ function canvasMouseMove(e) {
     var x = tmp.x;
     var y = tmp.y;
     if (in_tilt_mode) {
-
+        if (current_moving_vertex_id >= 0) {
+            drawMoveVertexPreview(x, y);
+        }
     } else {
         drawIndicateInfo(x, y);
     }
@@ -64,6 +67,7 @@ function canvasMouseUp(e) {
 
 function canvasMouseOut(e) {
     // console.log(e);
+    if (in_tilt_mode && current_moving_vertex_id >= 0) return;
     if (e.screenX == 0 && e.screenY == 0) return;
     clearCanvas(ctx_mask);
 }
@@ -112,6 +116,7 @@ function addVertex(x, y) {
     if (current_vertex != null) {
         if (current_direction == null) {
             current_direction = Math.abs(x - current_vertex.x) >= Math.abs(y - current_vertex.y) ? "vertical" : "horizontal";
+            current_ring.direction = current_direction; // 奇数号顶点出发的边是current_direction方向
         } else {
             current_direction = current_direction == "horizontal" ? "vertical" : "horizontal";
         }
@@ -439,6 +444,7 @@ function triggerTiltMode(enable) {
     } else {
         $('#tilt-mode-btn').removeClass('active');
         hideVertices();
+        current_moving_vertex_id = -1;
     }
 }
 
@@ -455,7 +461,7 @@ function showVertices() {
             last_time_stamp = e.timeStamp;
             startMoveVertex($(e.target));
         });
-        $('#canvas-container').append(div);
+        $('#vertices-container').append(div);
     });
     $('canvas').css('cursor', 'default');
 }
@@ -470,13 +476,71 @@ function startMoveVertex($t) {
     if (current_moving_vertex_id >= 0) {
         endMoveVertex();
     } else {
+        $('#mask').css('z-index', '1').css('cursor', 'move');
         $('.vertex').removeClass('active');
         $t.addClass('active');
         current_moving_vertex_id = $t.attr('id').split('_')[1];
+        current_neighbor_vertex_id = getNeighborVertex(current_moving_vertex_id);
     }
 }
 
 function endMoveVertex() {
     current_moving_vertex_id = -1;
+    $('#mask').css('z-index', '0').css('cursor', 'default');
     $('.vertex').removeClass('active');
+}
+
+function drawMoveVertexPreview(x, y) {
+    clearCanvas(ctx_mask);
+
+    var radius = CANVAS_SCALE * 2;
+    var line_width = CANVAS_SCALE;
+
+    var id = current_moving_vertex_id;
+    var id_neighbor = getNeighborVertex(id);
+    var v = ALL_POINT2D[id];
+    var v_neighbor = ALL_POINT2D[id_neighbor];
+    var c = {
+        x: x,
+        y: v.y
+    }
+
+    $('#vertex_' + id).css('left', 100 * c.x / CANVAS_SIZE.width + '%').css('top', 100 * c.y / CANVAS_SIZE.height + '%');
+    $('#vertex_' + id_neighbor).addClass('active');
+
+    var valid = false;
+    // 三个点: v、c、v_neighbor，在mask层绘制半透明三角形
+    ctx_mask.save();
+    ctx_mask.lineWidth = line_width;
+    ctx_mask.strokeStyle = valid ? 'rgba(100, 100, 100, 0.3)' : 'rgba(100, 50, 50, 0.3)';
+    ctx_mask.fillStyle = valid ? 'rgba(200, 200, 200, 0.3)' : 'rgba(200, 100, 100, 0.3)';
+    ctx_mask.beginPath();
+    ctx_mask.moveTo(v.x, v.y);
+    ctx_mask.lineTo(c.x, c.y);
+    ctx_mask.lineTo(v_neighbor.x, v_neighbor.y);
+    ctx_mask.lineTo(v.x, v.y);
+    ctx_mask.fill();
+    ctx_mask.stroke();
+    ctx_mask.restore();
+}
+
+function getNeighborVertex(id) {
+    // 返回与第id个点相连的倾斜边的另一个端点
+
+    // 复杂度与环大小成正比，不要频繁使用此函数
+    var v = ALL_POINT2D[id];
+    var r = ALL_RING[v.parent];
+    var n = r.vertices.length;
+    var idx;
+    for (var i = 0; i < n; i++) {
+        if (r.vertices[i].id == v.id) {
+            idx = i;
+            break;
+        }
+    }
+    if ((idx % 2 == 1) ^ (r.direction == 'vertical')) {
+        return (idx + n - 1) % n;
+    } else {
+        return (idx + 1) % n;
+    }
 }
