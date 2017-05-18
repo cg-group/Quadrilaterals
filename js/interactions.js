@@ -49,8 +49,9 @@ function canvasMouseUp(e) {
     var y = tmp.y;
     if (in_tilt_mode) {
         if (last_time_stamp != e.timeStamp) {
-            endMoveVertex();
+            endMoveVertex(x, y);
         }
+        // canvasMouseMove(e);
     } else {
         var c = candidateVertex(x, y);
 
@@ -67,7 +68,7 @@ function canvasMouseUp(e) {
 
 function canvasMouseOut(e) {
     // console.log(e);
-    if (in_tilt_mode && current_moving_vertex_id >= 0) return;
+    if (in_tilt_mode) return;
     if (e.screenX == 0 && e.screenY == 0) return;
     clearCanvas(ctx_mask);
 }
@@ -473,9 +474,7 @@ function hideVertices() {
 
 function startMoveVertex($t) {
     // console.log(id);
-    if (current_moving_vertex_id >= 0) {
-        endMoveVertex();
-    } else {
+    if (current_moving_vertex_id == -1) {
         $('#mask').css('z-index', '1').css('cursor', 'move');
         $('.vertex').removeClass('active');
         $t.addClass('active');
@@ -484,10 +483,32 @@ function startMoveVertex($t) {
     }
 }
 
-function endMoveVertex() {
+function endMoveVertex(x, y) {
+    var id = current_moving_vertex_id;
+    if (id >= 0) {
+        var id_neighbor = getNeighborVertex(id);
+        var v = ALL_POINT2D[id];
+        var v_neighbor = ALL_POINT2D[id_neighbor];
+        var c = {
+            x: x,
+            y: v.y
+        }
+
+        var valid = true; // @TODO
+
+        if (valid) {
+			v.x = x;
+        }
+
+		clearCanvas(ctx);
+        current_polygon.draw(ctx);
+		updateTextInfo();
+    }
+
     current_moving_vertex_id = -1;
     $('#mask').css('z-index', '0').css('cursor', 'default');
     $('.vertex').removeClass('active');
+	clearCanvas(ctx_mask);
 }
 
 function drawMoveVertexPreview(x, y) {
@@ -508,7 +529,15 @@ function drawMoveVertexPreview(x, y) {
     $('#vertex_' + id).css('left', 100 * c.x / CANVAS_SIZE.width + '%').css('top', 100 * c.y / CANVAS_SIZE.height + '%');
     $('#vertex_' + id_neighbor).addClass('active');
 
-    var valid = false;
+    var valid = true;
+	// @TODO: 实现一个函数，判断当前移动这个顶点到这个位置是否合法。
+	// 注意，多边形的其他部分都是已经固定了的，只有这个顶点在移动，所以目测只需要拿着这个顶点去遍历其他顶点（or边）就行
+	// 预期的复杂度是O(N)
+	// f(current_polygon, v, c); //注意，现在顶点、环、区域都有parent属性，parent记录了它parent的id，
+	//							// 比如，顶点v的parent id是23，那么ALL_RING[23]就是对应的环。
+
+
+
     // 三个点: v、c、v_neighbor，在mask层绘制半透明三角形
     ctx_mask.save();
     ctx_mask.lineWidth = line_width;
@@ -539,8 +568,8 @@ function getNeighborVertex(id) {
         }
     }
     if ((idx % 2 == 1) ^ (r.direction == 'vertical')) {
-        return (idx + n - 1) % n;
+        return r.vertices[(idx + n - 1) % n].id;
     } else {
-        return (idx + 1) % n;
+        return r.vertices[(idx + 1) % n].id;
     }
 }
