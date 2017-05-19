@@ -49,12 +49,15 @@ function canvasMouseUp(e) {
     var y = tmp.y;
     if (in_tilt_mode) {
         if (last_time_stamp != e.timeStamp) {
-            endMoveVertex(x, y);
+            if (e.which == 1) {
+                endMoveVertex(x, y);
+            } else {
+                cancelMoveVertex();
+            }
         }
         // canvasMouseMove(e);
     } else {
         var c = candidateVertex(x, y);
-
         if (e.which == 1) {
             // 左键添加顶点
             addVertex(c.x, c.y);
@@ -505,6 +508,18 @@ function endMoveVertex(x, y) {
 		updateTextInfo();
     }
 
+    current_moving_vertex_id = -1;
+    $('#mask').css('z-index', '0').css('cursor', 'default');
+    $('.vertex').removeClass('active');
+	clearCanvas(ctx_mask);
+}
+
+function cancelMoveVertex() {
+    var id = current_moving_vertex_id;
+    if (id >= 0) {
+        var v = ALL_POINT2D[id];
+        $('#vertex_' + id).css('left', 100 * v.x / CANVAS_SIZE.width + '%').css('top', 100 * v.y / CANVAS_SIZE.height + '%');
+    }
     current_moving_vertex_id = -1;
     $('#mask').css('z-index', '0').css('cursor', 'default');
     $('.vertex').removeClass('active');
