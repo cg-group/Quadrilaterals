@@ -34,4 +34,59 @@ function intersectionTest(p, q, s, t) {
     }
     return 'apart';
 }
+function scanline(region){
+    var points=[];
+    points=sort_points_by_x(region);
+    for(var i=0;i<points.length;i++){
+        var pre_edge=ALL_EDGE[points[i].pre_edge_id];
+        var next_edge=ALL_EDGE[points[i].next_edge_id];
+        var sin=-crossMul(next_edge,pre_edge);
+        var cos=dotMul(next_edge,pre_edge);
+        console.log(points[i].id);
+        console.log(sin);
+        if(sin>0&&cos<=0)
+            console.log("bord");
+        else if(cos<=0&&sin!=-1)
+            console.log("a");
+        else if(sin==-1&&cos==0)
+            console.log("c");
+        else
+            console.log("error");
 
+    }
+}
+function sort_points_by_x(region){
+    var points=[];
+    for(var i=0;i<region.outerRing[0].vertices.length;i++)
+        points.push(region.outerRing[0].vertices[i]);
+    for(var j=0;j<region.innerRings.length;j++)
+        for(var i=0;i<region.innerRings[j].vertices.length;i++)
+            points.push(region.innerRings[j].vertices[i]);
+    points.sort(function(a,b){
+        if(a.x==b.x)
+            return a.y-b.y;
+        else
+            return a.x-b.x;
+
+    });
+    console.log(points);
+    return points;
+
+}
+
+ function dotMul(next_edge,pre_edge){
+
+    var a_x=next_edge.end.x-next_edge.start.x;
+    var a_y=next_edge.end.y-next_edge.start.y;
+    var b_x=pre_edge.start.x-pre_edge.end.x;
+    var b_y=pre_edge.start.y-pre_edge.end.y;
+    return a_x*b_x+a_y*b_y;
+ }
+ function crossMul(next_edge,pre_edge){
+    var a_x=next_edge.end.x-next_edge.start.x;
+    var a_y=next_edge.end.y-next_edge.start.y;
+    var b_x=pre_edge.start.x-pre_edge.end.x;
+    var b_y=pre_edge.start.y-pre_edge.end.y;
+    var mod=Math.sqrt(a_x*a_x+a_y*a_y)*Math.sqrt(b_x*b_x+b_y*b_y);
+    return (a_x*b_y-b_x*a_y)/mod;
+ }

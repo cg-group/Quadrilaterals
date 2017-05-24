@@ -425,6 +425,7 @@ function updateTextInfo() {
     $('#info').html(str);
 }
 
+
 function triggerTiltMode(enable) {
     if (!(current_ring === null) && !(enable === false)) {
         // 必须是封闭的状态
@@ -587,4 +588,10 @@ function getNeighborVertex(id) {
     } else {
         return r.vertices[(idx + 1) % n].id;
     }
+}
+function scan(){
+    current_region.setEdges();
+    //sort_points_by_x(current_region);
+    scanline(current_region);
+
 }

@@ -15,7 +15,6 @@ Object.assign(Polygon.prototype, {
         this.regions = regions;
         return this;
     },
-
     clone: function() {
         var polygon = new Polygon();
         polygon.copy(this);
@@ -63,6 +62,7 @@ var ALL_REGION = [];
 function Region() {
     this.outerRing = [];
     this.innerRings = [];
+    this.edges=[];
     this.type = "Region";
     this.id = ALL_REGION.length;
     ALL_REGION.push(this);
@@ -81,6 +81,35 @@ Object.assign(Region.prototype, {
         }
         this.innerRings = rings;
         return this;
+    },
+    setEdges: function(){
+        for(var i=0;i<this.innerRings.length;i++){
+            var j=0;
+            for(;j<this.innerRings[i].vertices.length-1;j++)
+            {
+                var edge=new Edge();
+                edge.setRegion(this);
+                edge.setPoints(this.innerRings[i].vertices[j],this.innerRings[i].vertices[j+1]);
+                this.edges.push(edge);
+            }
+            var edge=new Edge();
+            edge.setRegion(this);
+            edge.setPoints(this.innerRings[i].vertices[j],this.innerRings[i].vertices[0]);
+            this.edges.push(edge);            
+        }
+        var j=0;
+        for(;j<this.outerRing[0].vertices.length-1;j++)
+        {
+            var edge=new Edge();
+            edge.setRegion(this);
+            edge.setPoints(this.outerRing[0].vertices[j],this.outerRing[0].vertices[j+1]);
+            this.edges.push(edge);
+        }
+        var edge=new Edge();
+        edge.setRegion(this);
+        edge.setPoints(this.outerRing[0].vertices[j],this.outerRing[0].vertices[0]);
+        this.edges.push(edge);   
+        //console.log(this.edges);//这个区域的边
     },
 
     clone: function() {
@@ -226,6 +255,7 @@ Object.assign(Ring.prototype, {
     },
 
     includingPoint: function(x, y) {
+
         var crossings = 0;
         var n = this.vertices.length;
         for (var i = 0; i < n; i++) {
@@ -243,6 +273,7 @@ Object.assign(Ring.prototype, {
 
     close: function() {
         this.closed = true;
+        this.vertices[0].pre_edge_id=this.lastVertex().id;
         // this.sort();
     },
 
@@ -323,6 +354,8 @@ function Point2D(x, y) {
     this.y = y || 0;
     this.type = "Point2D";
     this.id = ALL_POINT2D.length;
+    this.next_edge_id=this.id;
+    this.pre_edge_id=this.id-1||0;
     ALL_POINT2D.push(this);
 }
 
@@ -362,3 +395,54 @@ Object.assign(Point2D.prototype, {
         return str;
     }
 });
+
+var ALL_EDGE=[];
+function Edge(){
+    this.id=0;
+    this.start=null;
+    this.end=null;
+    this.region=null;
+    this.tilted=false;
+    this.left=false;
+
+}
+
+Object.assign(Edge.prototype,{
+    setPoints:function(start,end){//传进来的是点
+        this.id=start.id;
+        this.start=start;
+        this.end=end;
+        this.tilted_or_not(start,end);
+        ALL_EDGE.push(this);
+    },
+
+    setRegion:function (region) {
+        this.region=region;
+    },
+    tilted_or_not: function(start,end){
+        if(start.x!=end.x){//水平边
+            this.tilted=false;
+            this.left=false;
+        }
+        else{
+            this.tilted=true;
+            this.left=this.left_or_not(start,end);
+        }        
+    },
+    left_or_not:function(start,end){
+        if(start.id<this.region.outerRing[0].length){//外环上的点
+          if(start.y<end.y)
+              return false;
+          else
+              return true;
+        }
+        else{
+          if(start.y<end.y)
+              return true;
+          else
+              return false;        
+      }
+    },
+
+});
+
