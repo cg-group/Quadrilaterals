@@ -593,5 +593,6 @@ function scan(){
     current_region.setEdges();
     //sort_points_by_x(current_region);
     scanline(current_region);
+    sort_leftEdges_by_rightmost(current_region);
 
 }
