@@ -397,6 +397,7 @@
 
     }
     var printNode = function(value){
+        return;
         console.log(value,'inOrderTraverse');  
     }
 

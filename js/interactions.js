@@ -498,12 +498,14 @@ function endMoveVertex(x, y) {
             y: v.y
         };
 
-        var valid = true; // @TODO
+        var old_x = v.x;
+        v.x = x;
+        current_region.setEdges();
+        var valid = scanline(current_region);
 
-
-
-        if (valid) {
-			v.x = x;
+        if (!valid) {
+            v.x = old_x;
+            return;
         }
 
 		clearCanvas(ctx);
@@ -554,6 +556,14 @@ function drawMoveVertexPreview(x, y) {
 	// f(current_polygon, v, c); //注意，现在顶点、环、区域都有parent属性，parent记录了它parent的id，
 	//							// 比如，顶点v的parent id是23，那么ALL_RING[23]就是对应的环。
 
+    var old_x = v.x;
+    v.x = x;
+    current_region.setEdges();
+    var valid = scanline(current_region);
+    v.x = old_x;
+    if (!valid) {
+        //return;
+    }
 
     // 三个点: v、c、v_neighbor，在mask层绘制半透明三角形
     ctx_mask.save();
@@ -595,5 +605,70 @@ function scan(){
     //sort_points_by_x(current_region);
     scanline(current_region);
     sort_leftEdges_by_rightmost(current_region);
+}
 
+function decompose() {
+    current_region.setEdges();
+    //sort_points_by_x(current_region);
+
+    var valid = scanline(current_region);
+    if (!valid) {
+        console.log("invalid");
+        return false;
+    }
+    var left_edges = sort_leftEdges_by_rightmost(current_region);
+
+    var quadrilaterals = [];
+    while (left_edges.length > 0) {
+        var last_leftEdge = left_edges.pop();
+        console.log(last_leftEdge.start, last_leftEdge.end);
+        var u = last_leftEdge.start, v = last_leftEdge.end;
+        if (u.x > v.x) {
+            var t = u;
+            u = v;
+            v = t;
+        }
+        var r = v.get_right_neighbour();
+        var next_edge = ALL_EDGE[r.next_edge_id];
+        var prev_edge = ALL_EDGE[r.pre_edge_id];
+        var s;
+        if (next_edge.tilted_or_not()) {
+            s = next_edge.end;
+        }
+        else if (prev_edge.tilted_or_not()) {
+            s = prev_edge.start;
+        }
+        if (v.y < u.y) {
+            var t = u;
+            u = v;
+            v = t;
+        }
+        if (s.y < r.y) {
+            var t = s;
+            s = r;
+            r = t;
+        }
+        quadrilaterals.push([v, u, r, s]);
+        var e1 = new Edge().setPoints(u, r);
+        var e1_added = false;
+        if (e1.tilted_or_not()) {
+            if (u.y > r.y) {
+                left_edges.push(e1);
+                e1_added = true;
+            }
+        }
+        var e2 = new Edge().setPoints(v, s);
+        if (e2.tilted_or_not()) {
+            if (v.y < s.y) {
+                if (s.x < r.x && e1_added) {
+                    var e = left_edges.pop();
+                    left_edges.push(e2);
+                    left_edges.push(e);
+                } else {
+                    left_edges.push(e2);
+                }
+            }
+        }
+    }
+    return quadrilaterals;
 }

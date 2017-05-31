@@ -392,6 +392,10 @@ Object.assign(Point2D.prototype, {
         }
     },
 
+    get_right_neighbour: function () {
+        return this.right_neighbour;
+    },
+
     clone: function() {
         return new this.constructor(this.x, this.y);
     },
@@ -447,10 +451,12 @@ Object.assign(Edge.prototype,{
             else
                 this.end.right_neighbour=this.start;
         ALL_EDGE.push(this);
+        return this;
     },
 
     setRegion:function (region) {
         this.region=region;
+        return this;
     },
     tilted_or_not: function(){
         if(this.start.x!=this.end.x && this.start.y==this.end.y){//水平边
@@ -476,7 +482,6 @@ Object.assign(Edge.prototype,{
           else
               return false;        
       }
-    },
-
+    }
 });
 

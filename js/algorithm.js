@@ -8,14 +8,14 @@ function toLeftTest(p, q, s) {
         s.x * p.y - s.y * p.x;
 }
 
-function vector_from_to (p, q) {
+function vector_from_to(p, q) {
     return {
         x: q.x - p.x,
         y: q.y - p.y
     };
 }
 
-function dot_product (v1, v2) {
+function dot_product(v1, v2) {
     return v1.x * v2.x + v1.y + v2.y;
 }
 
@@ -49,139 +49,144 @@ function intersectionTest(p, q, s, t) {
     }
     return 'apart';
 }
-function scanline(region){
-    var points=[];
-    var tree=new Tree();
-    points=sort_points_by_x(region);
-    var set_right=0;
-    for(var i=0;i<points.length;i++){//用时o(n)
-        var pre_edge=ALL_EDGE[points[i].pre_edge_id];//left edge can be identified during the scan
+function scanline(region) {
+    var points = [];
+    var tree = new Tree();
+    points = sort_points_by_x(region);
+    var set_right = 0;
+    for (var i = 0; i < points.length; i++) {//用时o(n)
+        var pre_edge = ALL_EDGE[points[i].pre_edge_id];//left edge can be identified during the scan
         pre_edge.tilted_or_not();
-        var next_edge=ALL_EDGE[points[i].next_edge_id];
+        var next_edge = ALL_EDGE[points[i].next_edge_id];
         next_edge.tilted_or_not();
-        if(pre_edge.tilted==next_edge.tilted){
-        //test alternate edges
+        if (pre_edge.tilted == next_edge.tilted) {
+            //test alternate edges
             console.log("alternate error");
-            alert("not valid");
-            return;
+            // alert("not valid");
+            return false;
         }
-        var sin=crossMul(next_edge,pre_edge);//由于坐标轴问题，逆时针旋转实际是顺时针
-        if(ALL_RING[points[i].parent].isOuterRing)
-            sin=-sin;
-        var cos=dotMul(next_edge,pre_edge);
-        console.log("set_right is",set_right);
-        console.log(points[i].id,"type is");
-        if(sin>0&&cos>=0){
-            if((pre_edge.tilted+pre_edge.left+next_edge.tilted+next_edge.left)%2!=0){
-               console.log("b");//设置一些点的右邻居为v
-               tree.delete(tree.getRoot(),pre_edge.id);
-               tree.delete(tree.getRoot(),next_edge.id);
-               tree.inOrderTraverse(printNode);
-               for(;set_right<i;set_right++)
-                  if(!points[set_right].updateRight_neighbour(points[i]))
-                    break;
+        var sin = crossMul(next_edge, pre_edge);//由于坐标轴问题，逆时针旋转实际是顺时针
+        if (ALL_RING[points[i].parent].isOuterRing)
+            sin = -sin;
+        var cos = dotMul(next_edge, pre_edge);
+        //console.log("set_right is", set_right);
+        console.log(points[i].id, "type is");
+        if (sin > 0 && cos >= 0) {
+            if ((pre_edge.tilted + pre_edge.left + next_edge.tilted + next_edge.left) % 2 != 0) {
+                console.log("b");//设置一些点的右邻居为v
+                tree.delete(tree.getRoot(), pre_edge.id);
+                tree.delete(tree.getRoot(), next_edge.id);
+                tree.inOrderTraverse(printNode);
+                for (; set_right < i; set_right++)
+                    if (!points[set_right].updateRight_neighbour(points[i]))
+                        break;
             }
-            else{
+            else {
                 console.log("d");//v在等待设置右邻居
                 tree.insert(pre_edge.id);
                 tree.insert(next_edge.id);
                 tree.inOrderTraverse(printNode);
             }
         }
-        else if(cos<=0&&sin!=-1){
+        else if (cos <= 0 && sin != -1) {
             console.log("a");//设置一些点的右邻居为v,v在等待设置右邻居
-            if(tree.search(pre_edge.id)){
-                console.log("find",pre_edge.id);
-                tree.delete(tree.getRoot(),pre_edge.id);
+            if (tree.search(pre_edge.id)) {
+                console.log("find", pre_edge.id);
+                tree.delete(tree.getRoot(), pre_edge.id);
                 tree.insert(next_edge.id);
                 tree.inOrderTraverse(printNode);
             }
-            else{
-                console.log("find",next_edge.id);
-                tree.delete(tree.getRoot(),next_edge.id);
-                tree.insert(pre_edge.id);    
+            else {
+                console.log("find", next_edge.id);
+                tree.delete(tree.getRoot(), next_edge.id);
+                tree.insert(pre_edge.id);
                 tree.inOrderTraverse(printNode);
-            
+
             }
-            for(;set_right<i;set_right++)
-                if(!points[set_right].updateRight_neighbour(points[i]))
+            for (; set_right < i; set_right++)
+                if (!points[set_right].updateRight_neighbour(points[i]))
                     break;
         }
-        else if(sin==-1&&cos==0){
+        else if (sin == -1 && cos == 0) {
             console.log("c");//设置一些点的右邻居为v,v在等待设置右邻居
             tree.insert(pre_edge.id);
             tree.insert(next_edge.id);
             tree.inOrderTraverse(printNode);
-            for(;set_right<i;set_right++)
-                if(!points[set_right].updateRight_neighbour(points[i]))
+            for (; set_right < i; set_right++)
+                if (!points[set_right].updateRight_neighbour(points[i]))
                     break;
 
         }
-        else{//no interior angle is greater than 270
-            console.log("angle is greater than 270");
-            alert("not valid");
-            return;
+        else {//no interior angle is greater than 270
+            console.log("angle is greater than 270", pre_edge, next_edge);
+            // alert("not valid");
+            return false;
         }
 
     }
-    console.log(points);
+    console.log(points.map(function (p) { return p.x; }).join("\t"));
+    console.log(points.map(function (p) { return p.y; }).join("\t"));
+    return true;
 }
-function sort_points_by_x(region){
-    var points=[];
-    for(var i=0;i<region.outerRing[0].vertices.length;i++)
+function sort_points_by_x(region) {
+    var points = [];
+    for (var i = 0; i < region.outerRing[0].vertices.length; i++)
         points.push(region.outerRing[0].vertices[i]);
-    for(var j=0;j<region.innerRings.length;j++)
-        for(var i=0;i<region.innerRings[j].vertices.length;i++)
+    for (var j = 0; j < region.innerRings.length; j++)
+        for (var i = 0; i < region.innerRings[j].vertices.length; i++)
             points.push(region.innerRings[j].vertices[i]);
-    points.sort(function(a,b){
-        if(a.x==b.x)
-            //return a.y-b.y;
-            return b.y-a.y;//由于坐标系问题修改了这个比较
+    points.sort(function (a, b) {
+        if (a.x == b.x)
+        //return a.y-b.y;
+            return b.y - a.y;//由于坐标系问题修改了这个比较
         else
-            return a.x-b.x;
+            return a.x - b.x;
 
     });
     console.log(points);
     return points;
 
 }
-function sort_leftEdges_by_rightmost(region){
-    var leftEdges=[];
-    for (var i = 0; i < region.edges.length; i++) {
-        if(region.edges[i].left)
-            leftEdges.push(region.edges[i]);
-    };
-    leftEdges.sort(function(a,b){
-        var a_rightmost,a_rightmost;
-        if(a.start.x>a.end.x)
-            a_rightmost=a.start;
-        else
-            a_rightmost=a.end;
-        if(b.start.x>b.end.x)
-            b_rightmost=b.start;
-        else
-            b_rightmost=b.end;        
-        if(a_rightmost.x==b_rightmost.x)
-            return b_rightmost.y-a_rightmost.y;//由于坐标系问题修改了这个比较
-        else
-            return a_rightmost.x-b_rightmost.x;
-    });
-    console.log(leftEdges);
 
+function leftEdge_comparator(a, b) {
+    var a_rightmost, a_rightmost;
+    if (a.start.x > a.end.x)
+        a_rightmost = a.start;
+    else
+        a_rightmost = a.end;
+    if (b.start.x > b.end.x)
+        b_rightmost = b.start;
+    else
+        b_rightmost = b.end;
+    if (a_rightmost.x == b_rightmost.x)
+        return b_rightmost.y - a_rightmost.y;//由于坐标系问题修改了这个比较
+    else
+        return a_rightmost.x - b_rightmost.x;
 }
-function dotMul(next_edge,pre_edge){
 
-    var a_x=next_edge.end.x-next_edge.start.x;
-    var a_y=next_edge.end.y-next_edge.start.y;
-    var b_x=pre_edge.start.x-pre_edge.end.x;
-    var b_y=pre_edge.start.y-pre_edge.end.y;
-    return a_x*b_x+a_y*b_y;
- }
-function crossMul(next_edge,pre_edge){
-    var a_x=next_edge.end.x-next_edge.start.x;
-    var a_y=next_edge.end.y-next_edge.start.y;
-    var b_x=pre_edge.start.x-pre_edge.end.x;
-    var b_y=pre_edge.start.y-pre_edge.end.y;
-    var mod=Math.sqrt(a_x*a_x+a_y*a_y)*Math.sqrt(b_x*b_x+b_y*b_y);
-    return (a_x*b_y-b_x*a_y)/mod;
- }
+function sort_leftEdges_by_rightmost(region) {
+    var leftEdges = [];
+    for (var i = 0; i < region.edges.length; i++) {
+        if (region.edges[i].left)
+            leftEdges.push(region.edges[i]);
+    }
+    leftEdges.sort(leftEdge_comparator);
+    console.log(leftEdges);
+    return leftEdges;
+}
+function dotMul(next_edge, pre_edge) {
+
+    var a_x = next_edge.end.x - next_edge.start.x;
+    var a_y = next_edge.end.y - next_edge.start.y;
+    var b_x = pre_edge.start.x - pre_edge.end.x;
+    var b_y = pre_edge.start.y - pre_edge.end.y;
+    return a_x * b_x + a_y * b_y;
+}
+function crossMul(next_edge, pre_edge) {
+    var a_x = next_edge.end.x - next_edge.start.x;
+    var a_y = next_edge.end.y - next_edge.start.y;
+    var b_x = pre_edge.start.x - pre_edge.end.x;
+    var b_y = pre_edge.start.y - pre_edge.end.y;
+    var mod = Math.sqrt(a_x * a_x + a_y * a_y) * Math.sqrt(b_x * b_x + b_y * b_y);
+    return (a_x * b_y - b_x * a_y) / mod;
+}
