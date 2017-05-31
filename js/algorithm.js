@@ -7,7 +7,18 @@ function toLeftTest(p, q, s) {
         q.x * s.y - q.y * s.x +
         s.x * p.y - s.y * p.x;
 }
-  
+
+function vector_from_to (p, q) {
+    return {
+        x: q.x - p.x,
+        y: q.y - p.y
+    };
+}
+
+function dot_product (v1, v2) {
+    return v1.x * v2.x + v1.y + v2.y;
+}
+
 function intersectionTest(p, q, s, t) {
     // 判断线段pq与st相交情况
 
@@ -26,7 +37,11 @@ function intersectionTest(p, q, s, t) {
     }
     if (a == 0 && b == 0 && c == 0 && d == 0) {
         // 共线
-        if (true) {
+        var ps = vector_from_to(p, s);
+        var pt = vector_from_to(p, t);
+        var qs = vector_from_to(q, s);
+        var qt = vector_from_to(q, t);
+        if (dot_product(ps, pt) * dot_product(qs, qt) <= 0) {
             // 且有公共部分
             // @TODO: 如何判断线段有公共部分 (无法用toLeftTest判断)
             return 'collinear';

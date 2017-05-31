@@ -495,9 +495,11 @@ function endMoveVertex(x, y) {
         var c = {
             x: x,
             y: v.y
-        }
+        };
 
         var valid = true; // @TODO
+
+
 
         if (valid) {
 			v.x = x;
@@ -539,7 +541,7 @@ function drawMoveVertexPreview(x, y) {
     var c = {
         x: x,
         y: v.y
-    }
+    };
 
     $('#vertex_' + id).css('left', 100 * c.x / CANVAS_SIZE.width + '%').css('top', 100 * c.y / CANVAS_SIZE.height + '%');
     $('#vertex_' + id_neighbor).addClass('active');
@@ -550,7 +552,6 @@ function drawMoveVertexPreview(x, y) {
 	// 预期的复杂度是O(N)
 	// f(current_polygon, v, c); //注意，现在顶点、环、区域都有parent属性，parent记录了它parent的id，
 	//							// 比如，顶点v的parent id是23，那么ALL_RING[23]就是对应的环。
-
 
 
     // 三个点: v、c、v_neighbor，在mask层绘制半透明三角形
