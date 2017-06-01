@@ -610,8 +610,13 @@ function scan(){
 
 function decompose_and_display() {
     var quadrilaterals = decompose();
-    console.log("decomposed into ", quadrilaterals.length, "quadrilaterals");
+    display_quadrilateral(quadrilaterals);
+    console.log("decomposed into", quadrilaterals.length, "quadrilaterals");
+}
+
+function display_quadrilateral(quadrilaterals) {
+    var context = ctx;
     quadrilaterals.forEach(function (q) {
-        q.draw(ctx);
+        q.drawPath_closed(context);
     });
 }

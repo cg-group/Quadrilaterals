@@ -148,7 +148,7 @@ function sort_points_by_x(region) {
 }
 
 function leftEdge_comparator(a, b) {
-    var a_rightmost, a_rightmost;
+    var a_rightmost, b_rightmost;
     if (a.start.x > a.end.x)
         a_rightmost = a.start;
     else
@@ -201,10 +201,16 @@ function decompose() {
     }
     var left_edges = sort_leftEdges_by_rightmost(edges);
 
+    console.log("printing left edges");
+    left_edges.forEach(function (e) {
+        e.print();
+    });
+
     var quadrilaterals = [];
     while (left_edges.length > 0) {
         var last_leftEdge = left_edges.pop();
-        console.log(last_leftEdge.start, last_leftEdge.end);
+        //console.log(last_leftEdge.start, last_leftEdge.end);
+        last_leftEdge.print();
         var u = last_leftEdge.start, v = last_leftEdge.end;
         if (u.x > v.x) {
             var t = u;

@@ -317,6 +317,26 @@ Object.assign(Ring.prototype, {
         }
     },
 
+    drawPath_closed: function (context) {
+        if (!this.vertices.length) {
+            return;
+        }
+
+        if (!this.closed) {
+            context.save();
+            context.lineWidth = CANVAS_SCALE;
+            context.strokeStyle = "black";
+            context.beginPath();
+            var l = this.vertices.length;
+            context.moveTo(this.vertices[l - 1].x, this.vertices[l - 1].y);
+            for (var i = 0; i < this.vertices.length; i++) {
+                context.lineTo(this.vertices[i].x, this.vertices[i].y);
+            }
+            context.stroke();
+            context.restore();
+        }
+    },
+
     drawVertices: function (context) {
         if (!this.vertices.length) {
             return;
