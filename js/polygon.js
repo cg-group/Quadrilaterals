@@ -434,7 +434,6 @@ function Edge(){
     this.region=null;
     this.tilted=false;
     this.left=false;
-
 }
 
 Object.assign(Edge.prototype,{
@@ -462,12 +461,15 @@ Object.assign(Edge.prototype,{
         if(this.start.x!=this.end.x && this.start.y==this.end.y){//水平边
             this.tilted=false;
             this.left=false;
-
         }
         else{
             this.tilted=true;
             this.left=this.left_or_not();
-        }        
+        }
+        return this.tilted;
+    },
+    is_tilt: function () {
+        return !(this.start.x!=this.end.x && this.start.y==this.end.y);
     },
     left_or_not:function(){
         if(this.start.id<this.region.outerRing[0].vertices.length){//外环上的点

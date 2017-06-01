@@ -190,3 +190,70 @@ function crossMul(next_edge, pre_edge) {
     var mod = Math.sqrt(a_x * a_x + a_y * a_y) * Math.sqrt(b_x * b_x + b_y * b_y);
     return (a_x * b_y - b_x * a_y) / mod;
 }
+
+function decompose() {
+    current_region.setEdges();
+    //sort_points_by_x(current_region);
+
+    var valid = scanline(current_region);
+    if (!valid) {
+        console.log("invalid");
+        return [];
+    }
+    var left_edges = sort_leftEdges_by_rightmost(current_region);
+
+    var quadrilaterals = [];
+    while (left_edges.length > 0) {
+        var last_leftEdge = left_edges.pop();
+        console.log(last_leftEdge.start, last_leftEdge.end);
+        var u = last_leftEdge.start, v = last_leftEdge.end;
+        if (u.x > v.x) {
+            var t = u;
+            u = v;
+            v = t;
+        }
+        var r = v.get_right_neighbour();
+        var next_edge = ALL_EDGE[r.next_edge_id];
+        var prev_edge = ALL_EDGE[r.pre_edge_id];
+        var s;
+        if (next_edge.tilted_or_not()) {
+            s = next_edge.end;
+        }
+        else if (prev_edge.tilted_or_not()) {
+            s = prev_edge.start;
+        }
+        if (v.y < u.y) {
+            var t = u;
+            u = v;
+            v = t;
+        }
+        if (s.y < r.y) {
+            var t = s;
+            s = r;
+            r = t;
+        }
+        var ring = new Ring().setVertices([v, u, r, s]);
+        quadrilaterals.push(ring);
+        var e1 = new Edge().setPoints(u, r);
+        var e1_added = false;
+        if (e1.is_tilt()) {
+            if (u.y > r.y) {
+                left_edges.push(e1);
+                e1_added = true;
+            }
+        }
+        var e2 = new Edge().setPoints(v, s);
+        if (e2.is_tilt()) {
+            if (v.y < s.y) {
+                if (s.x < r.x && e1_added) {
+                    var e = left_edges.pop();
+                    left_edges.push(e2);
+                    left_edges.push(e);
+                } else {
+                    left_edges.push(e2);
+                }
+            }
+        }
+    }
+    return quadrilaterals;
+}
