@@ -13,6 +13,7 @@ function resetAll() {
     ALL_REGION = [];
     ALL_RING = [];
     ALL_POINT2D = [];
+    ALL_EDGE = [];
 
     current_polygon = new Polygon();
     current_region = new Region();
@@ -500,7 +501,7 @@ function endMoveVertex(x, y) {
 
         var old_x = v.x;
         v.x = x;
-        current_region.setEdges();
+        current_region.get_edges();
         var valid = scanline(current_region);
 
         if (!valid) {
@@ -558,7 +559,7 @@ function drawMoveVertexPreview(x, y) {
 
     var old_x = v.x;
     v.x = x;
-    current_region.setEdges();
+    current_region.get_edges();
     var valid = scanline(current_region);
     v.x = old_x;
     if (!valid) {
@@ -601,15 +602,16 @@ function getNeighborVertex(id) {
     }
 }
 function scan(){
-    current_region.setEdges();
+    var edges = current_region.get_edges();
     //sort_points_by_x(current_region);
     scanline(current_region);
-    sort_leftEdges_by_rightmost(current_region);
+    sort_leftEdges_by_rightmost(edges);
 }
 
 function decompose_and_display() {
     var quadrilaterals = decompose();
+    console.log("decomposed into ", quadrilaterals.length, "quadrilaterals");
     quadrilaterals.forEach(function (q) {
         q.draw(ctx);
-    })
+    });
 }

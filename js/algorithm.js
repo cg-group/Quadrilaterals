@@ -56,12 +56,12 @@ function scanline(region) {
     var set_right = 0;
     for (var i = 0; i < points.length; i++) {//用时o(n)
         var pre_edge = ALL_EDGE[points[i].pre_edge_id];//left edge can be identified during the scan
-        pre_edge.is_tilt();
+        //pre_edge.is_tilt();
         var next_edge = ALL_EDGE[points[i].next_edge_id];
-        next_edge.is_tilt();
+        //next_edge.is_tilt();
         if (pre_edge.is_tilt() == next_edge.is_tilt()) {
             //test alternate edges
-            console.log("alternate error");
+            console.log("alternate error", pre_edge.to_string(), next_edge.to_string());
             // alert("not valid");
             return false;
         }
@@ -123,8 +123,8 @@ function scanline(region) {
         }
 
     }
-    console.log(points.map(function (p) { return p.x; }).join("\t"));
-    console.log(points.map(function (p) { return p.y; }).join("\t"));
+    //console.log(points.map(function (p) { return p.x; }).join("\t"));
+    //console.log(points.map(function (p) { return p.y; }).join("\t"));
     return true;
 }
 function sort_points_by_x(region) {
@@ -142,7 +142,7 @@ function sort_points_by_x(region) {
             return a.x - b.x;
 
     });
-    console.log(points);
+    //console.log(points);
     return points;
 
 }
@@ -163,14 +163,14 @@ function leftEdge_comparator(a, b) {
         return a_rightmost.x - b_rightmost.x;
 }
 
-function sort_leftEdges_by_rightmost(region) {
+function sort_leftEdges_by_rightmost(edges) {
     var leftEdges = [];
-    for (var i = 0; i < region.edges.length; i++) {
-        if (region.edges[i].is_left())
-            leftEdges.push(region.edges[i]);
+    for (var i = 0; i < edges.length; i++) {
+        if (edges[i].is_left())
+            leftEdges.push(edges[i]);
     }
     leftEdges.sort(leftEdge_comparator);
-    console.log(leftEdges);
+    //console.log(leftEdges);
     return leftEdges;
 }
 function dotMul(next_edge, pre_edge) {
@@ -191,7 +191,7 @@ function crossMul(next_edge, pre_edge) {
 }
 
 function decompose() {
-    current_region.setEdges();
+    var edges = current_region.get_edges();
     //sort_points_by_x(current_region);
 
     var valid = scanline(current_region);
@@ -199,7 +199,7 @@ function decompose() {
         console.log("invalid");
         return [];
     }
-    var left_edges = sort_leftEdges_by_rightmost(current_region);
+    var left_edges = sort_leftEdges_by_rightmost(edges);
 
     var quadrilaterals = [];
     while (left_edges.length > 0) {
