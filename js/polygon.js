@@ -375,8 +375,8 @@ Object.assign(Point2D.prototype, {
                 this.right_neighbour=point;
                 return true;
             }
-            else if((ALL_EDGE[this.id].left+ALL_EDGE[this.id].tilted)%2==1 || 
-            (ALL_EDGE[point.id].left+ALL_EDGE[point.id].tilted)%2==1)//是右边则跳过这个点的右邻居更新
+            else if((ALL_EDGE[this.id].is_left()+ALL_EDGE[this.id].is_tilt())%2==1 ||
+            (ALL_EDGE[point.id].is_left()+ALL_EDGE[point.id].is_tilt())%2==1)//是右边则跳过这个点的右邻居更新
                 return true;
             else
                 return false;//没有更新
@@ -441,8 +441,7 @@ Object.assign(Edge.prototype,{
         this.id=start.id;
         this.start=start;
         this.end=end;
-        this.tilted_or_not();
-        if(!this.tilted)
+        if(!this.is_tilt())
             //水平边时直接定义右邻居，直接存点
             if (this.start.x<this.end.x) {
                 this.start.right_neighbour=this.end;
@@ -457,33 +456,31 @@ Object.assign(Edge.prototype,{
         this.region=region;
         return this;
     },
-    tilted_or_not: function(){
-        if(this.start.x!=this.end.x && this.start.y==this.end.y){//水平边
-            this.tilted=false;
-            this.left=false;
-        }
-        else{
-            this.tilted=true;
-            this.left=this.left_or_not();
-        }
-        return this.tilted;
-    },
+    //tilted_or_not: function(){
+    //    if(this.start.x!=this.end.x && this.start.y==this.end.y){//水平边
+    //        this.tilted=false;
+    //        //this.left=false;
+    //    }
+    //    else{
+    //        this.tilted=true;
+    //        //this.left=this.left_or_not();
+    //    }
+    //    return this.tilted;
+    //},
     is_tilt: function () {
         return !(this.start.x!=this.end.x && this.start.y==this.end.y);
     },
-    left_or_not:function(){
+    is_left:function(){
+        if (!this.is_tilt()) return false;
         if(this.start.id<this.region.outerRing[0].vertices.length){//外环上的点
-          if(this.start.y>this.end.y)//由于坐标系的问题，修改了比较
-              return false;
-          else
-              return true;
+            return this.start.y <= this.end.y; //由于坐标系的问题，修改了比较
         }
         else{
-          if(this.start.y>this.end.y)
-              return true;
-          else
-              return false;        
+          return this.start.y>this.end.y;
       }
+    },
+    print: function () {
+        console.log(this.start.x + "-" + this.start.y + "\t" + this.end.x + "-" + this.end.y);
     }
 });
 

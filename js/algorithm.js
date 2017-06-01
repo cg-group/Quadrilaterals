@@ -56,10 +56,10 @@ function scanline(region) {
     var set_right = 0;
     for (var i = 0; i < points.length; i++) {//用时o(n)
         var pre_edge = ALL_EDGE[points[i].pre_edge_id];//left edge can be identified during the scan
-        pre_edge.tilted_or_not();
+        pre_edge.is_tilt();
         var next_edge = ALL_EDGE[points[i].next_edge_id];
-        next_edge.tilted_or_not();
-        if (pre_edge.tilted == next_edge.tilted) {
+        next_edge.is_tilt();
+        if (pre_edge.is_tilt() == next_edge.is_tilt()) {
             //test alternate edges
             console.log("alternate error");
             // alert("not valid");
@@ -70,10 +70,9 @@ function scanline(region) {
             sin = -sin;
         var cos = dotMul(next_edge, pre_edge);
         //console.log("set_right is", set_right);
-        console.log(points[i].id, "type is");
         if (sin > 0 && cos >= 0) {
-            if ((pre_edge.tilted + pre_edge.left + next_edge.tilted + next_edge.left) % 2 != 0) {
-                console.log("b");//设置一些点的右邻居为v
+            if ((pre_edge.is_tilt() + pre_edge.is_left() + next_edge.is_tilt() + next_edge.is_left) % 2 != 0) {
+                console.log(points[i].id, "type is", "b");//设置一些点的右邻居为v
                 tree.delete(tree.getRoot(), pre_edge.id);
                 tree.delete(tree.getRoot(), next_edge.id);
                 tree.inOrderTraverse(printNode);
@@ -82,14 +81,14 @@ function scanline(region) {
                         break;
             }
             else {
-                console.log("d");//v在等待设置右邻居
+                console.log(points[i].id, "type is", "d");//v在等待设置右邻居
                 tree.insert(pre_edge.id);
                 tree.insert(next_edge.id);
                 tree.inOrderTraverse(printNode);
             }
         }
         else if (cos <= 0 && sin != -1) {
-            console.log("a");//设置一些点的右邻居为v,v在等待设置右邻居
+            console.log(points[i].id, "type is", "a");//设置一些点的右邻居为v,v在等待设置右邻居
             if (tree.search(pre_edge.id)) {
                 console.log("find", pre_edge.id);
                 tree.delete(tree.getRoot(), pre_edge.id);
@@ -97,7 +96,7 @@ function scanline(region) {
                 tree.inOrderTraverse(printNode);
             }
             else {
-                console.log("find", next_edge.id);
+                //console.log("find", next_edge.id);
                 tree.delete(tree.getRoot(), next_edge.id);
                 tree.insert(pre_edge.id);
                 tree.inOrderTraverse(printNode);
@@ -108,7 +107,7 @@ function scanline(region) {
                     break;
         }
         else if (sin == -1 && cos == 0) {
-            console.log("c");//设置一些点的右邻居为v,v在等待设置右邻居
+            console.log(points[i].id, "type is", "c");//设置一些点的右邻居为v,v在等待设置右邻居
             tree.insert(pre_edge.id);
             tree.insert(next_edge.id);
             tree.inOrderTraverse(printNode);
@@ -167,7 +166,7 @@ function leftEdge_comparator(a, b) {
 function sort_leftEdges_by_rightmost(region) {
     var leftEdges = [];
     for (var i = 0; i < region.edges.length; i++) {
-        if (region.edges[i].left)
+        if (region.edges[i].is_left())
             leftEdges.push(region.edges[i]);
     }
     leftEdges.sort(leftEdge_comparator);
@@ -216,10 +215,10 @@ function decompose() {
         var next_edge = ALL_EDGE[r.next_edge_id];
         var prev_edge = ALL_EDGE[r.pre_edge_id];
         var s;
-        if (next_edge.tilted_or_not()) {
+        if (next_edge.is_tilt()) {
             s = next_edge.end;
         }
-        else if (prev_edge.tilted_or_not()) {
+        else if (prev_edge.is_tilt()) {
             s = prev_edge.start;
         }
         if (v.y < u.y) {
