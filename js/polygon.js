@@ -8,20 +8,20 @@ function Polygon() {
 }
 
 Object.assign(Polygon.prototype, {
-    setRegions: function (regions) {
+    setRegions: function(regions) {
         for (var i = 0; i < regions.length; i++) {
             regions[i].parent = this.id;
         }
         this.regions = regions;
         return this;
     },
-    clone: function () {
+    clone: function() {
         var polygon = new Polygon();
         polygon.copy(this);
         return polygon;
     },
 
-    copy: function (polygon) {
+    copy: function(polygon) {
         this.regions = [];
         for (var i = 0; i < polygon.regions.length; i++) {
             this.regions.push(polygon.regions[i].clone());
@@ -29,19 +29,19 @@ Object.assign(Polygon.prototype, {
         return this;
     },
 
-    pushRegion: function (region) {
+    pushRegion: function(region) {
         this.regions.push(region);
         region.parent = this.id;
         return this;
     },
 
-    draw: function (context) {
+    draw: function(context) {
         for (var i = 0; i < this.regions.length; i++) {
             this.regions[i].draw(context);
         }
     },
 
-    print: function (do_not_print, html) {
+    print: function(do_not_print, html) {
         var str = '';
         for (var i = 0; i < this.regions.length; i++) {
             str += 'Region ' + i + ':\n';
@@ -62,64 +62,69 @@ var ALL_REGION = [];
 function Region() {
     this.outerRing = [];
     this.innerRings = [];
-    this.edges = [];
+    this.edges=[];
     this.type = "Region";
     this.id = ALL_REGION.length;
     ALL_REGION.push(this);
 }
 
 Object.assign(Region.prototype, {
-    setOuterRing: function (ring) {
+    setOuterRing: function(ring) {
         ring.parent = this.id;
         this.outerRing = [ring];
         return this;
     },
 
-    setInnerRings: function (rings) {
+    setInnerRings: function(rings) {
         for (var i = 0; i < rings.length; i++) {
             rings[i].parent = this.id;
         }
         this.innerRings = rings;
         return this;
     },
-    get_edges: function () {
-        var edges = [];
-        var j = 0;
-        for (; j < this.outerRing[0].vertices.length - 1; j++) {
-            var edge = new Edge();
+    setEdges: function(){
+        var j=0;
+        for(;j<this.outerRing[0].vertices.length-1;j++)
+        {
+            var edge=new Edge();
+            //edge.parent=this.id;
             edge.setRegion(this);
-            edge.setPoints(this.outerRing[0].vertices[j], this.outerRing[0].vertices[j + 1]);
-            edges.push(edge);
+            edge.setPoints(this.outerRing[0].vertices[j],this.outerRing[0].vertices[j+1]);
+            this.edges.push(edge);
         }
-        var edge = new Edge();
+        var edge=new Edge();
+        //edge.parent=this.id;
         edge.setRegion(this);
-        edge.setPoints(this.outerRing[0].vertices[j], this.outerRing[0].vertices[0]);
-        edges.push(edge);
-
-        for (var i = 0; i < this.innerRings.length; i++) {
-            var j = 0;
-            for (; j < this.innerRings[i].vertices.length - 1; j++) {
-                var edge = new Edge();
+        edge.setPoints(this.outerRing[0].vertices[j],this.outerRing[0].vertices[0]);
+        this.edges.push(edge); 
+        
+        for(var i=0;i<this.innerRings.length;i++){
+            var j=0;
+            for(;j<this.innerRings[i].vertices.length-1;j++)
+            {
+                var edge=new Edge();
+                //edge.parent=this.id;
                 edge.setRegion(this);
-                edge.setPoints(this.innerRings[i].vertices[j], this.innerRings[i].vertices[j + 1]);
+                edge.setPoints(this.innerRings[i].vertices[j],this.innerRings[i].vertices[j+1]);
                 this.edges.push(edge);
             }
-            var edge = new Edge();
+            var edge=new Edge();
+
             edge.setRegion(this);
-            edge.setPoints(this.innerRings[i].vertices[j], this.innerRings[i].vertices[0]);
-            edges.push(edge);
+            edge.setPoints(this.innerRings[i].vertices[j],this.innerRings[i].vertices[0]);
+            this.edges.push(edge);            
         }
-        return edges;
+  
         //console.log(this.edges);//这个区域的边
     },
 
-    clone: function () {
+    clone: function() {
         var region = new Region();
         region.copy(this);
         return region;
     },
 
-    copy: function (region) {
+    copy: function(region) {
         this.outerRing = [];
         for (var i = 0; i < region.outerRing.length; i++) {
             this.outerRing.push(region.outerRing[i].clone());
@@ -131,13 +136,13 @@ Object.assign(Region.prototype, {
         return this;
     },
 
-    pushInnerRing: function (ring) {
+    pushInnerRing: function(ring) {
         ring.parent = this.id;
         this.innerRings.push(ring);
         return this;
     },
 
-    includingPoint: function (x, y) {
+    includingPoint: function(x, y) {
         // 判断是否包含某个坐标点，返回 in out 或者 boundary
         // 如果在任意一个内环内，那么就是外部
         // 否则，如果在外环内，那么是内部
@@ -152,7 +157,7 @@ Object.assign(Region.prototype, {
         return "out";
     },
 
-    draw: function (context) {
+    draw: function(context) {
         if (this.outerRing.length == 0) {
             return;
         }
@@ -186,7 +191,7 @@ Object.assign(Region.prototype, {
         // }
     },
 
-    print: function (do_not_print, html) {
+    print: function(do_not_print, html) {
         var str = '\tOuter Ring:\n';
         str += '\t' + this.outerRing[0].print(true, html) + '\n';
         if (this.innerRings.length) {
@@ -218,7 +223,7 @@ function Ring() {
 }
 
 Object.assign(Ring.prototype, {
-    setVertices: function (vertices) {
+    setVertices: function(vertices) {
         for (var i = 0; i < vertices.length; i++) {
             vertices[i].parent = this.id;
         }
@@ -226,13 +231,13 @@ Object.assign(Ring.prototype, {
         return this;
     },
 
-    clone: function () {
+    clone: function() {
         var ring = new Ring();
         ring.copy(this);
         return ring;
     },
 
-    copy: function (ring) {
+    copy: function(ring) {
         this.vertices = [];
         for (var i = 0; i < ring.vertices.length; i++) {
             this.vertices.push(ring.vertices[i].clone());
@@ -241,21 +246,21 @@ Object.assign(Ring.prototype, {
         return this;
     },
 
-    insertVertex: function (position, x, y) {
+    insertVertex: function(position, x, y) {
         var v = new Point2D(x, y);
         v.parent = this.id;
         this.vertices.splice(position, 0, v);
         return this;
     },
 
-    pushVertex: function (x, y) {
+    pushVertex: function(x, y) {
         var v = new Point2D(x, y);
         v.parent = this.id;
         this.vertices.push(v);
         return this;
     },
 
-    includingPoint: function (x, y) {
+    includingPoint: function(x, y) {
 
         var crossings = 0;
         var n = this.vertices.length;
@@ -272,19 +277,19 @@ Object.assign(Ring.prototype, {
             return "out";
     },
 
-    close: function () {
+    close: function() {
         this.closed = true;
-        this.vertices[0].pre_edge_id = this.lastVertex().id;
+        this.vertices[0].pre_edge_id=this.lastVertex().id;
         // this.sort();
     },
 
-    lastVertex: function () {
+    lastVertex: function() {
         if (this.vertices.length) {
             return this.vertices[this.vertices.length - 1];
         }
     },
 
-    draw: function (context) {
+    draw: function(context) {
         if (!this.vertices.length) {
             return;
         }
@@ -298,7 +303,7 @@ Object.assign(Ring.prototype, {
         }
     },
 
-    drawPath: function (context) {
+    drawPath: function(context) {
         if (!this.vertices.length) {
             return;
         }
@@ -317,27 +322,7 @@ Object.assign(Ring.prototype, {
         }
     },
 
-    drawPath_closed: function (context) {
-        if (!this.vertices.length) {
-            return;
-        }
-
-        if (!this.closed) {
-            context.save();
-            context.lineWidth = CANVAS_SCALE;
-            context.strokeStyle = "black";
-            context.beginPath();
-            var l = this.vertices.length;
-            context.moveTo(this.vertices[l - 1].x, this.vertices[l - 1].y);
-            for (var i = 0; i < this.vertices.length; i++) {
-                context.lineTo(this.vertices[i].x, this.vertices[i].y);
-            }
-            context.stroke();
-            context.restore();
-        }
-    },
-
-    drawVertices: function (context) {
+    drawVertices: function(context) {
         if (!this.vertices.length) {
             return;
         }
@@ -347,7 +332,7 @@ Object.assign(Ring.prototype, {
         }
     },
 
-    print: function (do_not_print, html) {
+    print: function(do_not_print, html) {
         var str = '';
         for (var i = 0; i < this.vertices.length; i++) {
             str += this.vertices[i].print(true, html);
@@ -375,57 +360,34 @@ function Point2D(x, y) {
     this.y = y || 0;
     this.type = "Point2D";
     this.id = ALL_POINT2D.length;
-    this.next_edge_id = this.id;
-    this.pre_edge_id = this.id - 1 || 0;
-    this.right_neighbour = null;//有的顶点可能没有右邻居，
+    this.next_edge_id=this.id;
+    this.pre_edge_id=this.id-1||0;
+    this.right_neighbour=null;//有的顶点可能没有右邻居，
     ALL_POINT2D.push(this);
 }
 
 Object.assign(Point2D.prototype, {
-    set: function (x, y) {
+    set: function(x, y) {
         this.x = x;
         this.y = y;
         return this;
     },
-    updateRight_neighbour: function (point) {
-        if (this.right_neighbour != null) {
-            if (point.x < this.right_neighbour.x && this.id != point.next_edge_id && this.id != point.pre_edge_id
-                && this.pre_edge_id != point.id && this.next_edge_id != point.id) {//不以斜边相连
-                this.right_neighbour = point;
-                return true;
-            }
-            else if ((ALL_EDGE[this.id].is_left() + ALL_EDGE[this.id].is_tilt()) % 2 == 1 ||
-                (ALL_EDGE[point.id].is_left() + ALL_EDGE[point.id].is_tilt()) % 2 == 1)//是右边则跳过这个点的右邻居更新
-                return true;
-            else
-                return false;//没有更新
-        }
-        else {
-            if (this.id != point.next_edge_id && this.id != point.pre_edge_id
-                && this.pre_edge_id != point.id && this.next_edge_id != point.id) {
-                this.right_neighbour = point;
-                return true;
-            }
-            else
-                return false;//目前的右邻居还是null
-        }
+    updateRight_neighbour: function(point){
+
+        this.right_neighbour=point;
     },
 
-    get_right_neighbour: function () {
-        return this.right_neighbour;
-    },
-
-    clone: function () {
+    clone: function() {
         return new this.constructor(this.x, this.y);
     },
 
-    copy: function (point) {
+    copy: function(point) {
         this.x = point.x;
         this.y = point.y;
         return this;
     },
 
-    draw: function (context, color, radius) {
+    draw: function(context, color, radius) {
         radius *= CANVAS_SCALE;
         context.save();
         context.fillStyle = color;
@@ -433,7 +395,7 @@ Object.assign(Point2D.prototype, {
         context.restore();
     },
 
-    print: function (do_not_print, html) {
+    print: function(do_not_print, html) {
         var str = '(' + this.x + ', ' + this.y + ')';
         if (html) {
             str = '<point2d data-id="' + this.id + '">' + str + '</point2d>';
@@ -445,66 +407,61 @@ Object.assign(Point2D.prototype, {
     }
 });
 
-var ALL_EDGE = [];
+var ALL_EDGE=[];
+function Edge(){
+    this.id=0;
+    this.start=null;
+    this.end=null;
+    this.region=null;
+    this.tilted=false;
+    this.left=false;
 
-function Edge() {
-    this.id = 0;
-    this.start = null;
-    this.end = null;
-    this.region = null;
-    this.tilted = false;
-    this.left = false;
 }
 
-Object.assign(Edge.prototype, {
-    setPoints: function (start, end) {//传进来的是点
-        this.id = start.id;
-        this.start = start;
-        this.end = end;
-        if (!this.is_tilt())
-        //水平边时直接定义右邻居，直接存点
-            if (this.start.x < this.end.x) {
-                this.start.right_neighbour = this.end;
+Object.assign(Edge.prototype,{
+    setPoints:function(start,end){//传进来的是点
+        this.id=start.id;
+        this.start=start;
+        this.end=end;
+        this.tilted_or_not();
+        if(!this.tilted)
+            //水平边时直接定义右邻居，直接存点
+            if (this.start.x<this.end.x) {
+                this.start.right_neighbour=this.end;
             }
             else
-                this.end.right_neighbour = this.start;
+                this.end.right_neighbour=this.start;
         ALL_EDGE.push(this);
-        return this;
     },
 
-    setRegion: function (region) {
-        this.region = region;
-        return this;
+    setRegion:function (region) {
+        this.region=region;
     },
-    //tilted_or_not: function(){
-    //    if(this.start.x!=this.end.x && this.start.y==this.end.y){//水平边
-    //        this.tilted=false;
-    //        //this.left=false;
-    //    }
-    //    else{
-    //        this.tilted=true;
-    //        //this.left=this.left_or_not();
-    //    }
-    //    return this.tilted;
-    //},
-    is_tilt: function () {
-        return !(this.start.x != this.end.x && this.start.y == this.end.y);
+    tilted_or_not: function(){
+        if(this.start.x!=this.end.x && this.start.y==this.end.y){//水平边
+            this.tilted=false;
+            this.left=false;
+
+        }
+        else{
+            this.tilted=true;
+            this.left=this.left_or_not();
+        }        
     },
-    is_left: function () {
-        if (!this.is_tilt()) return false;
-        if (this.start.id < this.region.outerRing[0].vertices.length) {//外环上的点
-            return this.start.y <= this.end.y; //由于坐标系的问题，修改了比较
+    left_or_not:function(){
+        if(this.start.id<this.region.outerRing[0].vertices.length){//外环上的点
+          if(this.start.y>this.end.y)//由于坐标系的问题，修改了比较
+              return false;
+          else
+              return true;
         }
-        else {
-            return this.start.y > this.end.y;
-        }
+        else{
+          if(this.start.y>this.end.y)
+              return true;
+          else
+              return false;        
+      }
     },
 
-    to_string: function () {
-        return this.start.x + "-" + this.start.y + "\t" + this.end.x + "-" + this.end.y;
-    },
-    print: function () {
-        console.log(this.to_string());
-    }
 });
 
