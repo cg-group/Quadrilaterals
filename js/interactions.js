@@ -7,6 +7,7 @@ var in_tilt_mode;
 var current_moving_vertex_id;
 var current_neighbor_vertex_id;
 var last_time_stamp;
+var DEBUG = true;
 
 function resetAll() {
     ALL_POLYGON = [];
@@ -224,6 +225,7 @@ function coordWindowToReal(e) {
 
 function clearCanvas(context) {
     context.clearRect(0, 0, CANVAS_SIZE.width, CANVAS_SIZE.height);
+    draw_assistant_lines(context);
 }
 
 function generateRandomColor() {
@@ -270,10 +272,60 @@ function drawIndicateInfo(x, y) {
         ctx_mask.stroke();
         ctx_mask.restore();
     }
+
+    draw_assistant_lines(ctx_mask);
+
     ctx_mask.save();
     ctx_mask.fillStyle = '#607d8b';
     ctx_mask.fillRect(c.x - radius, c.y - radius, 2 * radius + 1, 2 * radius + 1);
     ctx_mask.restore();
+}
+
+function draw_line(context, start, end) {
+    context.beginPath();
+    context.moveTo(start.x, start.y);
+    context.lineTo(end.x, end.y);
+    context.stroke();
+}
+
+function draw_assistant_lines(context) {
+    if (!DEBUG) {
+        return;
+    }
+    var canvas = document.getElementById('canvas');
+    var width = canvas.width;
+    var height = canvas.height;
+    var step = 100, bar_size = width, i;
+    context.save();
+    var default_lineWidth = 3;
+    var bold_line_color = "rgba(128,128,128,0.3)";
+    var thin_line_color = "rgba(208,208,208,0.6)";
+    context.lineWidth = 3;
+    context.strokeStyle = "black";
+    for (i = 1; i < width / step; i ++) {
+        context.lineWidth = (i % 5 == 0) ? 3 * default_lineWidth : default_lineWidth;
+        context.strokeStyle = (i % 5 == 0) ? bold_line_color : thin_line_color;
+        draw_line(context, {
+            x: i * step,
+            y: 0
+        }, {
+            x: i * step,
+            y: bar_size
+        });
+    }
+
+    for (i = 1; i < height / step; i ++) {
+        context.lineWidth = (i % 5 == 0) ? 3 * default_lineWidth : default_lineWidth;
+        context.strokeStyle = (i % 5 == 0) ? bold_line_color : thin_line_color;
+        draw_line(context, {
+            y: i * step,
+            x: 0
+        }, {
+            y: i * step,
+            x: bar_size
+        });
+    }
+    context.restore();
 }
 
 function candidateVertex(x, y) {
@@ -549,13 +601,6 @@ function drawMoveVertexPreview(x, y) {
 
     $('#vertex_' + id).css('left', 100 * c.x / CANVAS_SIZE.width + '%').css('top', 100 * c.y / CANVAS_SIZE.height + '%');
     $('#vertex_' + id_neighbor).addClass('active');
-
-    var valid = true;
-	// @TODO: 实现一个函数，判断当前移动这个顶点到这个位置是否合法。
-	// 注意，多边形的其他部分都是已经固定了的，只有这个顶点在移动，所以目测只需要拿着这个顶点去遍历其他顶点（or边）就行
-	// 预期的复杂度是O(N)
-	// f(current_polygon, v, c); //注意，现在顶点、环、区域都有parent属性，parent记录了它parent的id，
-	//							// 比如，顶点v的parent id是23，那么ALL_RING[23]就是对应的环。
 
     var old_x = v.x;
     v.x = x;

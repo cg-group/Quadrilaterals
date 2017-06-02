@@ -508,3 +508,47 @@ Object.assign(Edge.prototype, {
     }
 });
 
+var ALL_CHORD = [];
+
+function Chord() {
+    this.id = -1;
+    this.start = null;
+    this.end = null;
+    this.region = null;
+}
+
+Object.assign(Chord.prototype, {
+    from_edge: function (edge) {
+        return this.setPoints(edge.start, edge.end);
+    },
+    setPoints: function (start, end) {
+        this.id = start.id + "-" + end.id;
+        this.start = start;
+        this.end = end;
+        return this;
+    },
+
+    setRegion: function (region) {
+        this.region = region;
+        return this;
+    },
+    is_tilt: function () {
+        return !(this.start.x != this.end.x && this.start.y == this.end.y);
+    },
+    is_left: function () {
+        if (!this.is_tilt()) return false;
+        if (this.start.id < this.region.outerRing[0].vertices.length) {//外环上的点
+            return this.start.y <= this.end.y; //由于坐标系的问题，修改了比较
+        }
+        else {
+            return this.start.y > this.end.y;
+        }
+    },
+
+    to_string: function () {
+        return this.start.x + "-" + this.start.y + "\t" + this.end.x + "-" + this.end.y;
+    },
+    print: function () {
+        console.log(this.to_string());
+    }
+});

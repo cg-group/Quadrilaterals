@@ -59,6 +59,10 @@ function scanline(region) {
         //pre_edge.is_tilt();
         var next_edge = ALL_EDGE[points[i].next_edge_id];
         //next_edge.is_tilt();
+        console.log();
+        if (DEBUG) {
+            console.log("edge:\t", pre_edge.to_string(), next_edge.to_string());
+        }
         if (pre_edge.is_tilt() == next_edge.is_tilt()) {
             //test alternate edges
             console.log("alternate error", pre_edge.to_string(), next_edge.to_string());
@@ -72,7 +76,9 @@ function scanline(region) {
         //console.log("set_right is", set_right);
         if (sin > 0 && cos >= 0) {
             if ((pre_edge.is_tilt() + pre_edge.is_left() + next_edge.is_tilt() + next_edge.is_left) % 2 != 0) {
-                console.log(points[i].id, "type is", "b");//设置一些点的右邻居为v
+                if (DEBUG) {
+                    console.log(points[i].id, points[i].x, points[i].y, "type is", "b");//设置一些点的右邻居为v
+                }
                 tree.delete(tree.getRoot(), pre_edge.id);
                 tree.delete(tree.getRoot(), next_edge.id);
                 tree.inOrderTraverse(printNode);
@@ -81,14 +87,18 @@ function scanline(region) {
                         break;
             }
             else {
-                console.log(points[i].id, "type is", "d");//v在等待设置右邻居
+                if (DEBUG) {
+                    console.log(points[i].id, points[i].x, points[i].y, "type is", "d");//v在等待设置右邻居
+                }
                 tree.insert(pre_edge.id);
                 tree.insert(next_edge.id);
                 tree.inOrderTraverse(printNode);
             }
         }
         else if (cos <= 0 && sin != -1) {
-            console.log(points[i].id, "type is", "a");//设置一些点的右邻居为v,v在等待设置右邻居
+            if (DEBUG) {
+                console.log(points[i].id, points[i].x, points[i].y, "type is", "a");//设置一些点的右邻居为v,v在等待设置右邻居
+            }
             if (tree.search(pre_edge.id)) {
                 console.log("find", pre_edge.id);
                 tree.delete(tree.getRoot(), pre_edge.id);
@@ -107,24 +117,24 @@ function scanline(region) {
                     break;
         }
         else if (sin == -1 && cos == 0) {
-            console.log(points[i].id, "type is", "c");//设置一些点的右邻居为v,v在等待设置右邻居
+            if (DEBUG) {
+                console.log(points[i].id, points[i].x, points[i].y, "type is", "c");//设置一些点的右邻居为v,v在等待设置右邻居
+            }
             tree.insert(pre_edge.id);
             tree.insert(next_edge.id);
             tree.inOrderTraverse(printNode);
             for (; set_right < i; set_right++)
                 if (!points[set_right].updateRight_neighbour(points[i]))
                     break;
-
         }
         else {//no interior angle is greater than 270
-            console.log("angle is greater than 270", pre_edge, next_edge);
+            if (DEBUG) {
+                console.log(points[i].id, points[i].x, points[i].y, "angle is greater than 270", pre_edge, next_edge);
+            }
             // alert("not valid");
             return false;
         }
-
     }
-    //console.log(points.map(function (p) { return p.x; }).join("\t"));
-    //console.log(points.map(function (p) { return p.y; }).join("\t"));
     return true;
 }
 function sort_points_by_x(region) {
@@ -192,25 +202,30 @@ function crossMul(next_edge, pre_edge) {
 
 function decompose() {
     var edges = current_region.get_edges();
-    //sort_points_by_x(current_region);
 
     var valid = scanline(current_region);
     if (!valid) {
         console.log("invalid");
         return [];
     }
-    var left_edges = sort_leftEdges_by_rightmost(edges);
+    var left_chord = sort_leftEdges_by_rightmost(edges).map(function (e) {
+        return new Chord().from_edge(e);
+    });
 
-    console.log("printing left edges");
-    left_edges.forEach(function (e) {
-        e.print();
+    var chords = ALL_EDGE.map(function (e) {
+        return new Chord().from_edge(e);
+    });
+
+    var next_chord_map = {};
+    var pre_chord_map = {};
+    edges.forEach(function (e) {
+        next_chord_map[e.start.id] = chords[e.start.next_edge_id];
+        pre_chord_map[e.end.id] = chords[e.end.pre_edge_id];
     });
 
     var quadrilaterals = [];
-    while (left_edges.length > 0) {
-        var last_leftEdge = left_edges.pop();
-        //console.log(last_leftEdge.start, last_leftEdge.end);
-        last_leftEdge.print();
+    while (left_chord.length > 0) {
+        var last_leftEdge = left_chord.pop();
         var u = last_leftEdge.start, v = last_leftEdge.end;
         if (u.x > v.x) {
             var t = u;
@@ -218,47 +233,80 @@ function decompose() {
             v = t;
         }
         var r = v.get_right_neighbour();
-        var next_edge = ALL_EDGE[r.next_edge_id];
-        var prev_edge = ALL_EDGE[r.pre_edge_id];
+        var next_chord = next_chord_map[r.id];
+        var prev_chord = pre_chord_map[r.id];
         var s;
-        if (next_edge.is_tilt()) {
-            s = next_edge.end;
+        if (next_chord.is_tilt()) {
+            s = next_chord.end;
         }
-        else if (prev_edge.is_tilt()) {
-            s = prev_edge.start;
+        else if (prev_chord.is_tilt()) {
+            s = prev_chord.start;
         }
-        if (v.y < u.y) {
+        if (v.y > u.y) {
             var t = u;
             u = v;
             v = t;
         }
-        if (s.y < r.y) {
+        if (s.y > r.y) {
             var t = s;
             s = r;
             r = t;
         }
         var ring = new Ring().setVertices([v, u, r, s]);
         quadrilaterals.push(ring);
-        var e1 = new Edge().setPoints(u, r);
+        if (DEBUG) {
+            ring.drawPath_closed(ctx);
+        }
+
+        var e1 = new Chord().setPoints(r, u);
+        next_chord_map[r.id] = e1;
+        pre_chord_map[u.id] = e1;
         var e1_added = false;
         if (e1.is_tilt()) {
             if (u.y > r.y) {
-                left_edges.push(e1);
+                left_chord.push(e1);
                 e1_added = true;
             }
         }
-        var e2 = new Edge().setPoints(v, s);
+        var e2 = new Chord().setPoints(v, s);
+        next_chord_map[v.id] = e2;
+        pre_chord_map[s.id] = e2;
         if (e2.is_tilt()) {
             if (v.y < s.y) {
                 if (s.x < r.x && e1_added) {
-                    var e = left_edges.pop();
-                    left_edges.push(e2);
-                    left_edges.push(e);
+                    var e = left_chord.pop();
+                    left_chord.push(e2);
+                    left_chord.push(e);
                 } else {
-                    left_edges.push(e2);
+                    left_chord.push(e2);
                 }
             }
         }
+        //left_chord.sort(leftEdge_comparator);
+
+        //var e1 = new Chord().setPoints(u, r);
+        //var e1_added = false;
+        //if (e1.is_tilt()) {
+        //    if (u.y > r.y) {
+        //        left_chord.push(e1);
+        //        e1_added = true;
+        //    }
+        //}
+        //var e2 = new Chord().setPoints(v, s);
+        //if (e2.is_tilt()) {
+        //    if (v.y < s.y) {
+        //        if (s.x < r.x && e1_added) {
+        //            var e = left_chord.pop();
+        //            left_chord.push(e2);
+        //            left_chord.push(e);
+        //        }
+        //    }
+        //    else {
+        //        left_chord.push(e2);
+        //    }
+        //}
+        //left_chord.sort(leftEdge_comparator);
     }
+
     return quadrilaterals;
 }
