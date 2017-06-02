@@ -30,6 +30,7 @@
         <div class="row" style="margin-bottom: 0;">
             <div id="canvas-container" class="col s8" style="line-height: 0;padding: 0;position: relative;">
                 <canvas id="canvas" width="2000px" height="2000px"></canvas>
+                <canvas id="animation" width="2000px" height="2000px" style="position: absolute;top: 0; left: 0;"></canvas>
                 <canvas id="mask" width="2000px" height="2000px" style="position: absolute;top: 0; left: 0;"></canvas>
                 <div id="vertices-container"></div>
             </div>
@@ -41,7 +42,7 @@
                     <a class="hvr-bounce-to-right hvr-forward waves-effect waves-light" onclick="closeRing();">Close Ring</a>
                     <a class="hvr-bounce-to-right hvr-forward waves-effect waves-light hvr-orange" onclick="saveImage();">Save Image</a>
                     <div class="divider"></div>
-                    <a class="hvr-bounce-to-right hvr-forward waves-effect waves-light" onclick="scan();">test</a>
+                    <a class="hvr-bounce-to-right hvr-forward waves-effect waves-light" onclick="scan();">Scan</a>
                     <a class="hvr-bounce-to-right hvr-forward waves-effect waves-light" onclick="decompose_and_display()">Decompose</a>
                 </div>
                 <div id="info"></div>
@@ -75,6 +76,7 @@
     <script type="text/javascript" src="js/polygon.js"></script>
     <script type="text/javascript" src="js/algorithm.js"></script>
     <script type="text/javascript" src="js/interactions.js"></script>
+    <script type="text/javascript" src="js/animation.js"></script>
     
     <script>
         var CANVAS_SIZE = {
@@ -84,6 +86,7 @@
         var CANVAS_SCALE = CANVAS_SIZE.height / 2000 * 5;
         var ctx, $canvas, canvas;
         var ctx_mask, $mask, mask;
+        var animation_ctx;
         $(document).ready(function() {
             $canvas = $('#canvas');
             canvas = $canvas[0];
@@ -91,6 +94,8 @@
             $mask = $('#mask');
             mask = $mask[0];
             ctx_mask = mask.getContext('2d');
+
+            animation_ctx = document.getElementById('animation').getContext("2d");
 
             $('body').on('contextmenu', '#mask', function(e) {
                 return false;

@@ -68,8 +68,8 @@ function scanline(region) {
         if (pre_edge.is_tilt() == next_edge.is_tilt()) {
             //test alternate edges
             console.log("alternate error");
-            alert("not valid");
-            return;
+            //alert("not valid");
+            return false;
         }
 
         var sin = crossMul(next_edge, pre_edge);//由于坐标轴问题，逆时针旋转实际是顺时针
@@ -118,8 +118,8 @@ function scanline(region) {
         }
         else {//no interior angle is greater than 270
             console.log("angle is greater than 270");
-            alert("not valid");
-            return;
+            //alert("not valid");
+            return false;
         }
 
         //添加当前所有的左边
@@ -132,7 +132,8 @@ function scanline(region) {
         tree.insert(pre_edge.id);
         tree.insert(next_edge.id);
     }
-    console.log(points);
+    //console.log(points);
+    return true;
 }
 
 function sort_points_by_x(region) {

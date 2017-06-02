@@ -82,6 +82,18 @@ Object.assign(Region.prototype, {
         this.innerRings = rings;
         return this;
     },
+
+    getVertices: function () {
+        var list = [];
+        this.innerRings.forEach(function (r) {
+            list = list.concat(r.getVertices());
+        });
+        this.outerRing.forEach(function (r) {
+            list = list.concat(r.getVertices());
+        });
+        return list;
+    },
+
     get_edges: function () {
         var edges = [];
         var j = 0;
@@ -224,6 +236,10 @@ Object.assign(Ring.prototype, {
         }
         this.vertices = vertices;
         return this;
+    },
+
+    getVertices: function () {
+        return this.vertices;
     },
 
     clone: function() {
@@ -388,7 +404,6 @@ Object.assign(Point2D.prototype, {
         return this;
     },
     updateRight_neighbour: function(point){
-
         this.right_neighbour=point;
     },
 
@@ -425,7 +440,6 @@ Object.assign(Point2D.prototype, {
         return str;
     }
 });
-
 
 var ALL_EDGE = [];
 

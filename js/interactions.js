@@ -26,6 +26,7 @@ function resetAll() {
     current_polygon.pushRegion(current_region);
     current_region.setOuterRing(current_ring);
     clearCanvas(ctx);
+    clearCanvas(animation_ctx);
     clearCanvas(ctx_mask);
     updateTextInfo();
 }
@@ -651,6 +652,7 @@ function scan(){
     //sort_points_by_x(current_region);
     scanline(current_region);
     sort_leftEdges_by_rightmost(edges);
+    visualize_scanning(current_region.getVertices());
 }
 
 function decompose_and_display() {
