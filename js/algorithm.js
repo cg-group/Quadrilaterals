@@ -68,8 +68,8 @@ function scanline(region) {
         if (pre_edge.is_tilt() == next_edge.is_tilt()) {
             //test alternate edges
             console.log("alternate error");
-            alert("not valid");
-            return;
+            // alert("not valid");
+            return false;
         }
 
         var sin = crossMul(next_edge, pre_edge);//由于坐标轴问题，逆时针旋转实际是顺时针
@@ -118,8 +118,8 @@ function scanline(region) {
         }
         else {//no interior angle is greater than 270
             console.log("angle is greater than 270");
-            alert("not valid");
-            return;
+            // alert("not valid");
+            return false;
         }
 
         //添加当前所有的左边
@@ -133,6 +133,7 @@ function scanline(region) {
         tree.insert(next_edge.id);
     }
     console.log(points);
+    return true;
 }
 
 function sort_points_by_x(region) {
@@ -249,12 +250,15 @@ function find_below(points, index) {//下面的且y最大的
 function check_right(p, edges) {//右边上一个点对于所有左边点是否能够更新他们的右邻居
     console.log("check_right", p.id, 'edges.length', edges.length);
     for (var i = 0; i < edges.length; i++) {
+
+        if(p.id==edges[i].start.id || p.id==edges[i].end.id)
+            continue;
         if (edges[i].start.right_neighbour != null && edges[i].start.right_neighbour.x > p.x) {
             if (check_valid(edges[i].start, p, edges[i].region))//点所在环所在的区域
                 edges[i].start.updateRight_neighbour(p);
         }
 
-        else if (!edges[i].start.right_neighbour && edges[i].end.x < p.x) {
+        else if (!edges[i].start.right_neighbour && edges[i].start.x < p.x) {
             if (check_valid(edges[i].start, p, edges[i].region))//边不与所在的区域边相交
                 edges[i].start.updateRight_neighbour(p);
         }
@@ -272,14 +276,16 @@ function check_right(p, edges) {//右边上一个点对于所有左边点是否�
     }
 }
 function check_valid(p1, p2, region) {
-    console.log(region);
     for (var i = 0; i < region.edges.length; i++) {
         var start = region.edges[i].start;
         var end = region.edges[i].end;
-        if (start == p1 || start == p2 || end == p1 || end == p2)
+        console.log('test',start.id,end.id);
+        if (start.id == p1.id || start.id == p2.id || end.id == p1.id || end.id == p2.id)
             continue;
-        else if (intersectionTest(p1, p2, region.edges[i].start, region.edges[i].end) == 'intersect')
+        if (intersectionTest(p1, p2, region.edges[i].start, region.edges[i].end) == 'intersect'){
+            console.log("intersect");
             return false;
+        }
     }
     return true;
 }
