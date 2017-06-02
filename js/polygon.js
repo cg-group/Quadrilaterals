@@ -121,6 +121,7 @@ Object.assign(Region.prototype, {
             edge.setPoints(this.innerRings[i].vertices[j], this.innerRings[i].vertices[0]);
             edges.push(edge);
         }
+        this.edges = edges;
         return edges;
         //console.log(this.edges);//这个区域的边
     },
