@@ -140,7 +140,9 @@ function display_quadrilateral(quadrilaterals, history) {
             context.restore();
         }
         if (t > first_stage + second_stage + third_stage) {
-            var color = "rgba(128,128,128," + (t - first_stage - second_stage - third_stage) / last_stage + ")";
+            var opacity = (t - first_stage - second_stage - third_stage) / last_stage;
+            opacity = 1 / (1 + Math.exp((opacity * 12 - 6)));
+            var color = "rgba(128,128,128," + opacity + ")";
             q.drawPath_closed(animation_ctx, color, active_lineWidth);
         }
 
