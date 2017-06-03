@@ -13,7 +13,7 @@ function visualize_scanning(sorted_vertex) {
 
     var progress = 0, step = 0.003, highlight_radius = 30;
 
-    var max_progress = (highlight_radius) / width + 1;
+    var max_progress = (highlight_radius * 4) / width + 1;
 
     var node_color = "#3c3c3c";
     var scaling_radius = function (delta) {

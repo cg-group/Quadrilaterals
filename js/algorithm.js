@@ -327,6 +327,8 @@ function decompose() {
         var next_chord = next_chord_map[r.id];
         var prev_chord = pre_chord_map[r.id];
         var s;
+        console.log('debug decompose',edges.length);
+
         if (next_chord.is_tilt()) {
             s = next_chord.end;
         }

@@ -114,7 +114,7 @@ Object.assign(Region.prototype, {
                 var edge = new Edge();
                 edge.setRegion(this);
                 edge.setPoints(this.innerRings[i].vertices[j], this.innerRings[i].vertices[j + 1]);
-                this.edges.push(edge);
+                edges.push(edge);
             }
             var edge = new Edge();
             edge.setRegion(this);
