@@ -270,7 +270,7 @@ function check_right(p, edges) {//右边上一个点对于所有左边点是否�
             }
         }
         else if (!edges[i].end.right_neighbour && edges[i].end.x < p.x) {
-            if (check_valid(edges[i].end, p, edges[i].region))//边不与所在的区域边相交
+            if (check_valid(edges[i].end, p, edges[i].region))
                 edges[i].end.updateRight_neighbour(p);
         }
     }
@@ -287,7 +287,10 @@ function check_valid(p1, p2, region) {
             return false;
         }
     }
-    return true;
+    if(region.includingPoint((p1.x+p2.x)/2,(p1.y+p2.y)/2)=="in")
+        return true;
+    else
+        return false;
 }
 
 function decompose() {
