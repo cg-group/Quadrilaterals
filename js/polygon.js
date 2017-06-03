@@ -334,14 +334,15 @@ Object.assign(Ring.prototype, {
         }
     },
 
-    drawPath_closed: function (context) {
+    drawPath_closed: function (context, fill, lineWidth) {
         if (!this.vertices.length) {
             return;
         }
 
         if (!this.closed) {
             context.save();
-            context.lineWidth = CANVAS_SCALE;
+            context.lineWidth = lineWidth ? lineWidth : CANVAS_SCALE;
+            context.fillStyle = fill ? fill : "gray";
             context.strokeStyle = "black";
             context.beginPath();
             var l = this.vertices.length;
@@ -350,6 +351,7 @@ Object.assign(Ring.prototype, {
                 context.lineTo(this.vertices[i].x, this.vertices[i].y);
             }
             context.stroke();
+            context.fill();
             context.restore();
         }
     },

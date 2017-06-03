@@ -206,6 +206,7 @@ function closeRing(x, y) {
     }
     updateTextInfo();
     clearCanvas(ctx_mask);
+    clearCanvas(animation_ctx);
 }
 
 function coordWindowToReal(e) {
@@ -498,6 +499,7 @@ function triggerTiltMode(enable) {
     if (in_tilt_mode) {
         $('#tilt-mode-btn').addClass('active');
         clearCanvas(ctx_mask);
+        clearCanvas(animation_ctx);
         showVertices();
         current_moving_vertex_id = -1;
     } else {
@@ -563,6 +565,7 @@ function endMoveVertex(x, y) {
         }
 
 		clearCanvas(ctx);
+        clearCanvas(animation_ctx);
         current_polygon.draw(ctx);
 		updateTextInfo();
     }
@@ -656,14 +659,9 @@ function scan(){
 }
 
 function decompose_and_display() {
-    var quadrilaterals = decompose();
-    display_quadrilateral(quadrilaterals);
+    var result = decompose();
+    var quadrilaterals = result.quadrilateral;
+    display_quadrilateral(quadrilaterals, result.history);
     console.log("decomposed into", quadrilaterals.length, "quadrilaterals");
 }
 
-function display_quadrilateral(quadrilaterals) {
-    var context = ctx;
-    quadrilaterals.forEach(function (q) {
-        q.drawPath_closed(context);
-    });
-}

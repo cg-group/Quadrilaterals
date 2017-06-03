@@ -314,6 +314,7 @@ function decompose() {
     });
 
     var quadrilaterals = [];
+    var history = [];
     while (left_chord.length > 0) {
         var last_leftEdge = left_chord.pop();
         var u = last_leftEdge.start, v = last_leftEdge.end;
@@ -332,6 +333,7 @@ function decompose() {
         else if (prev_chord.is_tilt()) {
             s = prev_chord.start;
         }
+        history.push([u, v, r, s]);
         if (v.y > u.y) {
             var t = u;
             u = v;
@@ -345,7 +347,7 @@ function decompose() {
         var ring = new Ring().setVertices([v, u, r, s]);
         quadrilaterals.push(ring);
         if (DEBUG) {
-            ring.drawPath_closed(ctx);
+            //ring.drawPath_closed(animation_ctx);
         }
 
         var e1 = new Chord().setPoints(r, u);
@@ -398,5 +400,15 @@ function decompose() {
         //left_chord.sort(leftEdge_comparator);
     }
 
-    return quadrilaterals;
+    return {
+        "quadrilateral": quadrilaterals,
+        "history": history
+    };
 }
+
+var interpolate = function (s, e, t) {
+    return {
+        x: s.x * (1 - t) + e.x * t,
+        y: s.y * (1 - t) + e.y * t
+    };
+};
