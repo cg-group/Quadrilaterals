@@ -308,8 +308,8 @@ function draw_assistant_lines(context) {
     var step = 100, bar_size = width, i;
     context.save();
     var default_lineWidth = 3;
-    var bold_line_color = "rgba(128,128,128,0.3)";
-    var thin_line_color = "rgba(208,208,208,0.6)";
+    var bold_line_color = "rgba(158,158,158,0.1)";
+    var thin_line_color = "rgba(208,208,208,0.3)";
     context.lineWidth = 3;
     context.strokeStyle = "black";
     for (i = 1; i < width / step; i ++) {
@@ -570,8 +570,8 @@ function endMoveVertex(x, y) {
 
         var old_x = v.x;
         v.x = x;
-        current_region.get_edges();
-        var valid = scanline(current_region);
+        var result = decompose();
+        var valid = result["status"];
 
         if (!valid) {
             v.x = old_x;
@@ -622,8 +622,9 @@ function drawMoveVertexPreview(x, y) {
 
     var old_x = v.x;
     v.x = x;
-    current_region.get_edges();
-    var valid = scanline(current_region);
+    //current_region.get_edges();
+    var result = decompose();
+    var valid = result["status"];
     v.x = old_x;
     if (!valid) {
         //return;
@@ -674,6 +675,10 @@ function scan(){
 
 function decompose_and_display() {
     var result = decompose();
+    if (!result["status"] && result.quadrilateral.length == 0) {
+        console.log("not valid");
+        return;
+    }
     var quadrilaterals = result.quadrilateral;
     display_quadrilateral(quadrilaterals, result.history);
     console.log("decomposed into", quadrilaterals.length, "quadrilaterals");

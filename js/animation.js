@@ -85,10 +85,10 @@ function display_quadrilateral(quadrilaterals, history) {
     clearCanvas(context);
     if (quadrilaterals.length == 0) return;
     var progress = 0, step = 1 / quadrilaterals.length * 0.01;
-    var first_stage = 0.1,
-        second_stage = 0.5,
-        third_stage = 0.1,
-        last_stage = 0.3;
+    var first_stage = 0.2,
+        second_stage = 0.2,
+        third_stage = 0.2,
+        last_stage = 0.4;
     var active_lineWidth = 10;
     var progress_per_q = 1 / quadrilaterals.length;
     function frame() {
@@ -136,6 +136,8 @@ function display_quadrilateral(quadrilaterals, history) {
         if (t > first_stage + second_stage) {
             mid_t = interpolate(r, s, Math.min((t - first_stage - second_stage) / third_stage, 1));
             context.save();
+            context.lineWidth = active_lineWidth + 4;
+            context.strokeStyle = "black";
             context.lineWidth = active_lineWidth;
             context.strokeStyle = 'black';
             context.beginPath();

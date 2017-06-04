@@ -531,6 +531,10 @@ Object.assign(Edge.prototype, {
         }
     },
 
+    is_outer: function () {
+        return this.start.id < this.region.outerRing[0].vertices.length;
+    },
+
     to_string: function () {
         return this.start.x + "-" + this.start.y + "\t" + this.end.x + "-" + this.end.y;
     },
@@ -557,6 +561,11 @@ Object.assign(Chord.prototype, {
         this.id = start.id + "-" + end.id;
         this.start = start;
         this.end = end;
+        return this;
+    },
+
+    reverse: function () {
+        this.setPoints(this.end, this.start);
         return this;
     },
 

@@ -315,31 +315,61 @@ function check_valid(p1, p2, region) {
         return false;
 }
 
+function is_turn_left (p, q, r) {
+    return (q.x - p.x) * (r.y - q.y) - (q.y - p.y) * (r.x - q.x) < 0;
+}
+
+function is_convex(p, q, r, s) {
+    var a = is_turn_left(p, q, r);
+    var b = is_turn_left(q, r, s);
+    var c = is_turn_left(r, s, p);
+    var d = is_turn_left(s, p, q);
+    return a == b && b == c && c == d;
+}
+
 function decompose() {
     var edges = current_region.get_edges();
 
     var valid = scanline(current_region);
     if (!valid) {
         console.log("invalid");
-        return [];
+        return {
+            "status": false
+        };
     }
     var left_chord = sort_leftEdges_by_rightmost(edges).map(function (e) {
         return new Chord().from_edge(e);
     });
 
     var chords = ALL_EDGE.map(function (e) {
-        return new Chord().from_edge(e);
+        var c = new Chord().from_edge(e);
+        if (!e.is_outer()) {
+            c.reverse();
+        }
+        return c;
     });
 
     var next_chord_map = {};
     var pre_chord_map = {};
     edges.forEach(function (e) {
-        next_chord_map[e.start.id] = chords[e.start.next_edge_id];
-        pre_chord_map[e.end.id] = chords[e.end.pre_edge_id];
+        if (e.is_outer()) {
+            next_chord_map[e.start.id] = chords[e.start.next_edge_id];
+            pre_chord_map[e.end.id] = chords[e.end.pre_edge_id];
+        } else {
+            next_chord_map[e.start.id] = chords[e.start.pre_edge_id];
+            pre_chord_map[e.end.id] = chords[e.end.next_edge_id];
+        }
     });
 
     var quadrilaterals = [];
     var history = [];
+    var brake = false;
+    var iteration_count = 0;
+    var result = {
+        "status": false,
+        "quadrilateral": quadrilaterals,
+        "history": history
+    };
     while (left_chord.length > 0) {
         var last_leftEdge = left_chord.pop();
         var u = last_leftEdge.start, v = last_leftEdge.end;
@@ -349,10 +379,13 @@ function decompose() {
             v = t;
         }
         var r = v.get_right_neighbour();
+        if (r == null) {
+            return result;
+        }
         var next_chord = next_chord_map[r.id];
         var prev_chord = pre_chord_map[r.id];
         var s;
-        console.log('debug decompose',edges.length);
+        //console.log('debug decompose',left_chord.length);
 
         if (next_chord.is_tilt()) {
             s = next_chord.end;
@@ -360,7 +393,13 @@ function decompose() {
         else if (prev_chord.is_tilt()) {
             s = prev_chord.start;
         }
+
+        //if (!is_convex(u, v, r, s)) {
+        //    return result;
+        //}
+
         history.push([u, v, r, s]);
+        //history.push([u, s, r, v]);
         if (v.y > u.y) {
             var t = u;
             u = v;
@@ -401,36 +440,17 @@ function decompose() {
                 }
             }
         }
-        //left_chord.sort(leftEdge_comparator);
-
-        //var e1 = new Chord().setPoints(u, r);
-        //var e1_added = false;
-        //if (e1.is_tilt()) {
-        //    if (u.y > r.y) {
-        //        left_chord.push(e1);
-        //        e1_added = true;
-        //    }
-        //}
-        //var e2 = new Chord().setPoints(v, s);
-        //if (e2.is_tilt()) {
-        //    if (v.y < s.y) {
-        //        if (s.x < r.x && e1_added) {
-        //            var e = left_chord.pop();
-        //            left_chord.push(e2);
-        //            left_chord.push(e);
-        //        }
-        //    }
-        //    else {
-        //        left_chord.push(e2);
-        //    }
-        //}
-        //left_chord.sort(leftEdge_comparator);
+        iteration_count ++;
+        if (iteration_count > 100) {
+            break;
+        }
+        if (brake) {
+            break;
+        }
     }
 
-    return {
-        "quadrilateral": quadrilaterals,
-        "history": history
-    };
+    result["status"] = true;
+    return result;
 }
 
 var interpolate = function (s, e, t) {
