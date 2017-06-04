@@ -502,35 +502,35 @@ p.mathjax-block,
 </style>
 </head>
 <body class='typora-export ' >
-<div  id='write'  class = 'is-mac'><h2><a name='header-c1192' class='md-header-anchor '></a>用户手册</h2><div class='md-toc' mdtype='toc'><p class="md-toc-content"><span class="md-toc-item md-toc-h2" data-ref="c1192"><a class="md-toc-inner" style="" href="#header-c1192">用户手册</a></span><span class="md-toc-item md-toc-h3" data-ref="c1195"><a class="md-toc-inner" style="" href="#header-c1195">1. 运行环境及启动方法</a></span><span class="md-toc-item md-toc-h3" data-ref="c1202"><a class="md-toc-inner" style="" href="#header-c1202">2. 概述</a></span><span class="md-toc-item md-toc-h3" data-ref="c1203"><a class="md-toc-inner" style="" href="#header-c1203">3. 添加多边形</a></span><span class="md-toc-item md-toc-h4" data-ref="c1204"><a class="md-toc-inner" style="" href="#header-c1204">3.1 添加正交多边形</a></span><span class="md-toc-item md-toc-h4" data-ref="c1226"><a class="md-toc-inner" style="" href="#header-c1226">3.2 调整倾斜边</a></span><span class="md-toc-item md-toc-h3" data-ref="c1248"><a class="md-toc-inner" style="" href="#header-c1248">4. 分解多边形</a></span></p></div><h3><a name='header-c1195' class='md-header-anchor '></a>1. 运行环境及启动方法</h3><p>打开源代码目录下的<code>index.html</code>或访问<a href='https://cg-group.github.io/Quadrilaterals/'>https://cg-group.github.io/Quadrilaterals/</a>即可启动(推荐使用Chrome或Safari浏览器)。</p><p>界面如图所示:</p><p><img src='img/1.png' alt='' /></p><h3><a name='header-c1202' class='md-header-anchor '></a>2. 概述</h3><h3><a name='header-c1203' class='md-header-anchor '></a>3. 添加多边形</h3><h4><a name='header-c1204' class='md-header-anchor '></a>3.1 添加正交多边形</h4><p>正交多边形指的是各条边要么水平、要么垂直的多边形。例如，下图即为一个包含两个内环的正交多边形:
-<img src="img/2.png" width="350px"/>
-页面左侧的正方形区域为绘图区，在此区域单击鼠标将开始创建多边形的外环。接下来，移动鼠标，将如下图出现绿色参考线。此时单击鼠标，将在绿色方形处创建第二个顶点。第一条边可能是水平的或是垂直的:
-<img src="img/3.png"/>
-如果第一条边是水平的，那么第二条边必须是垂直的:
-<img src="img/4.png"/>
-在创建正交多边形的过程中，单击鼠标右键可封闭当前环。灰色参考线展示了环封闭后的形状。程序在封闭环时将根据当前已有边数是奇数还是偶数采取不同的处理，如上图(奇数)、下图(偶数)所示:
-<img src="img/5.png"/>
-如果当前环无法直接封闭，那么封闭环的参考线将由灰色变成浅红色:
-<img src="img/6.png"/>
-如果当前鼠标位置无法添加新顶点，那么添加顶点的参考线将由绿色变成红色:
-<img src="img/7.png"/>
-右键单击鼠标，封闭当前环:
-<img src="img/9.png"/>
-添加内环的方法与绘制外环方法类似。第一个顶点需要在多边形内部单击。绘制过程中，顶点不可超出多边形区域:
-<img src="img/10.png"/>
-也不可使环自相交:
-<img src="img/11.png"/>
-添加内环后的效果如图:
-<img src="img/12.png"/></p><h4><a name='header-c1226' class='md-header-anchor '></a>3.2 调整倾斜边</h4><p>伪正交多边形的定义比正交多边形宽松一些，除水平边外，不限制其余边是垂直的，允许&quot;倾斜边&quot;的出现，同时满足如下条件:</p><ul><li>各个内角均不大于270°;</li><li>水平边与倾斜边交替出现;</li><li>将所有顶点投影在<span class="MathJax_Preview"></span><span class="MathJax_SVG" id="MathJax-Element-1-Frame" tabindex="-1" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="1.33ex" height="1.495ex" viewBox="0 -543.3 572.5 643.7" role="img" focusable="false" style="vertical-align: -0.233ex;"><defs><path stroke-width="1" id="E1-MJMATHI-78" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><use xlink:href="#E1-MJMATHI-78" x="0" y="0"></use></g></svg></span><script type="math/tex" id="MathJax-Element-1">x</script>轴上，那么倾斜边投影得到的线段内不包含其他顶点的投影。</li></ul><p>如下图所示:
-<img src="img/13.png" width="350px"/>
-我们的程序允许在添加完正交多边形后，编辑多边形中的垂直边。按下空格或点击右上角&quot;Edit Tilt Edge&quot;按钮，将进入倾斜边编辑状态，此时该按钮将被激活，绘图区中将显示多边形的各个顶点。单击一个顶点，便可以开始移动此顶点:
-<img src="img/14.png"/>
-预览三角形呈灰色表示移动至该位置合法，红色则表示非法:
-<img src="img/15.png"/>
-单击鼠标左键将确认移动顶点，单击鼠标右键或按下ESC将取消此次移动:
-<img src="img/16.png"/></p><h3><a name='header-c1248' class='md-header-anchor '></a>4. 分解多边形</h3><p>添加完多边形后，点击&quot;Scan&quot;按钮，绘图区将出现从左至右移动的垂直扫描线。扫描线扫过各个顶点后，将计算各个顶点的&quot;右邻居&quot;。如下图所示，具有右邻居的顶点将与其右邻居连接一条由蓝色渐变至黄色的线段:
-<img src="img/17.png"/>
-单击&quot;Decompose&quot;按钮，将开始四边形分解。分解每个四边形时，将首先找到一条&quot;left edge&quot;，再找到该left edge的一个端点的右邻居，再找到与该右邻居相接的顶点。将这四个顶点顺次连接便是一个分解出的多边形:
-<img src="img/18.png"/></p></div>
+<div  id='write'  class = 'is-mac'><h2><a name='header-c1380' class='md-header-anchor '></a>用户手册</h2><div class='md-toc' mdtype='toc'><p class="md-toc-content"><span class="md-toc-item md-toc-h2" data-ref="c1380"><a class="md-toc-inner" href="#header-c1380">用户手册</a></span><span class="md-toc-item md-toc-h3" data-ref="c1383"><a class="md-toc-inner" href="#header-c1383">1. 运行环境及启动方法</a></span><span class="md-toc-item md-toc-h3" data-ref="c1390"><a class="md-toc-inner" href="#header-c1390">2. 添加多边形</a></span><span class="md-toc-item md-toc-h4" data-ref="c1391"><a class="md-toc-inner" href="#header-c1391">2.1 添加正交多边形</a></span><span class="md-toc-item md-toc-h4" data-ref="c1413"><a class="md-toc-inner" href="#header-c1413">2.2 调整倾斜边</a></span><span class="md-toc-item md-toc-h3" data-ref="c1435"><a class="md-toc-inner" href="#header-c1435">3. 分解多边形</a></span></p></div><h3><a name='header-c1383' class='md-header-anchor '></a>1. 运行环境及启动方法</h3><p>打开源代码目录下的<code>index.html</code>或访问<a href='https://cg-group.github.io/Quadrilaterals/'>https://cg-group.github.io/Quadrilaterals/</a>即可启动(推荐使用Chrome或Safari浏览器)。</p><p>界面如图所示:</p><p><img src='img/1.png' alt='' /></p><h3><a name='header-c1390' class='md-header-anchor '></a>2. 添加多边形</h3><h4><a name='header-c1391' class='md-header-anchor '></a>2.1 添加正交多边形</h4><p>正交多边形指的是各条边要么水平、要么垂直的多边形。例如，下图即为一个包含两个内环的正交多边形:<br/>
+<img src="img/2.png" width="350px"/><br/>
+页面左侧的正方形区域为绘图区，在此区域单击鼠标将开始创建多边形的外环。接下来，移动鼠标，将如下图出现绿色参考线。此时单击鼠标，将在绿色方形处创建第二个顶点。第一条边可能是水平的或是垂直的:<br/>
+<img src="img/3.png"/><br/>
+如果第一条边是水平的，那么第二条边必须是垂直的:<br/>
+<img src="img/4.png"/><br/>
+在创建正交多边形的过程中，单击鼠标右键可封闭当前环。灰色参考线展示了环封闭后的形状。程序在封闭环时将根据当前已有边数是奇数还是偶数采取不同的处理，如上图(奇数)、下图(偶数)所示:<br/>
+<img src="img/5.png"/><br/>
+如果当前环无法直接封闭，那么封闭环的参考线将由灰色变成浅红色:<br/>
+<img src="img/6.png"/><br/>
+如果当前鼠标位置无法添加新顶点，那么添加顶点的参考线将由绿色变成红色:<br/>
+<img src="img/7.png"/><br/>
+右键单击鼠标，封闭当前环:<br/>
+<img src="img/9.png"/><br/>
+添加内环的方法与绘制外环方法类似。第一个顶点需要在多边形内部单击。绘制过程中，顶点不可超出多边形区域:<br/>
+<img src="img/10.png"/><br/>
+也不可使环自相交:<br/>
+<img src="img/11.png"/><br/>
+添加内环后的效果如图:<br/>
+<img src="img/12.png"/><br/></p><h4><a name='header-c1413' class='md-header-anchor '></a>2.2 调整倾斜边</h4><p>伪正交多边形的定义比正交多边形宽松一些，除水平边外，不限制其余边是垂直的，允许&quot;倾斜边&quot;的出现，同时满足如下条件:</p><ul><li>各个内角均不大于270°;</li><li>水平边与倾斜边交替出现;</li><li>将所有顶点投影在<span class="MathJax_Preview"></span><span class="MathJax_SVG" id="MathJax-Element-1-Frame" tabindex="-1" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="1.33ex" height="1.495ex" viewBox="0 -543.3 572.5 643.7" role="img" focusable="false" style="vertical-align: -0.233ex;"><defs><path stroke-width="1" id="E1-MJMATHI-78" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><use xlink:href="#E1-MJMATHI-78" x="0" y="0"></use></g></svg></span><script type="math/tex" id="MathJax-Element-1">x</script>轴上，那么倾斜边投影得到的线段内不包含其他顶点的投影。</li></ul><p>如下图所示:<br/>
+<img src="img/13.png" width="350px"/><br/>
+我们的程序允许在添加完正交多边形后，编辑多边形中的垂直边。按下空格或点击右上角&quot;Edit Tilt Edge&quot;按钮，将进入倾斜边编辑状态，此时该按钮将被激活，绘图区中将显示多边形的各个顶点。单击一个顶点，便可以开始移动此顶点:<br/>
+<img src="img/14.png"/><br/>
+预览三角形呈灰色表示移动至该位置合法，红色则表示非法:<br/>
+<img src="img/15.png"/><br/>
+单击鼠标左键将确认移动顶点，单击鼠标右键或按下ESC将取消此次移动:<br/>
+<img src="img/16.png"/><br/></p><h3><a name='header-c1435' class='md-header-anchor '></a>3. 分解多边形</h3><p>添加完多边形后，点击&quot;Scan&quot;按钮，绘图区将出现从左至右移动的垂直扫描线。扫描线扫过各个顶点后，将计算各个顶点的&quot;右邻居&quot;。如下图所示，具有右邻居的顶点将与其右邻居连接一条由蓝色渐变至黄色的线段:<br/>
+<img src="img/17.png"/><br/>
+单击&quot;Decompose&quot;按钮，将开始四边形分解。分解每个四边形时，将首先找到一条&quot;left edge&quot;，再找到该left edge的一个端点的右邻居，再找到与该右邻居相接的顶点。将这四个顶点顺次连接便是一个分解出的多边形:<br/>
+<img src="img/18.png"/><br/></p></div>
 </body>
 </html>
