@@ -44,7 +44,7 @@ Object.assign(Polygon.prototype, {
     print: function(do_not_print, html) {
         var str = '';
         for (var i = 0; i < this.regions.length; i++) {
-            str += 'Region ' + i + ':\n';
+            // str += 'Region ' + i + ':\n';
             str += this.regions[i].print(true, html);
         }
         if (html) {
@@ -200,10 +200,10 @@ Object.assign(Region.prototype, {
     },
 
     print: function(do_not_print, html) {
-        var str = '\tOuter Ring:\n';
+        var str = 'Outer Ring:\n';
         str += '\t' + this.outerRing[0].print(true, html) + '\n';
         if (this.innerRings.length) {
-            str += '\tInner Rings:\n';
+            str += 'Inner Rings:\n';
         }
         for (var i = 0; i < this.innerRings.length; i++) {
             str += '\t' + this.innerRings[i].print(true, html) + '\n';

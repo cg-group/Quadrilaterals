@@ -7,7 +7,7 @@ var in_tilt_mode;
 var current_moving_vertex_id;
 var current_neighbor_vertex_id;
 var last_time_stamp;
-var DEBUG = true;
+var DEBUG = false;
 
 function resetAll() {
     ALL_POLYGON = [];
