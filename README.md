@@ -4,7 +4,7 @@
 
 ### 1. 运行环境及启动方法
 
-打开`index.html`或访问[https://cg-group.github.io/Quadrilaterals/](https://cg-group.github.io/Quadrilaterals/)即可启动(推荐使用Chrome或Safari浏览器打开)。
+打开源代码目录下的`index.html`或访问[https://cg-group.github.io/Quadrilaterals/](https://cg-group.github.io/Quadrilaterals/)即可启动(推荐使用Chrome或Safari浏览器)。
 
 界面如图所示:
 
@@ -14,7 +14,11 @@
 
 ### 3. 添加多边形
 
-#### 3.1 
+#### 3.1 添加正交多边形 
+
+正交多边形指的是各条边要么水平、要么垂直的多边形。
+
+![](img/2.png)
 
 #### 3.2 调整倾斜边
 
