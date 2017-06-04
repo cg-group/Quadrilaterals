@@ -416,4 +416,15 @@ var interpolate = function (s, e, t) {
         x: s.x * (1 - t) + e.x * t,
         y: s.y * (1 - t) + e.y * t
     };
-};
+}
+
+var interpolate2 = function(st, ed, x) {
+    var d = ed.x - st.x;
+    var t = 1;
+    if (d) {
+        t = (x - st.x) / d;
+    }
+    t = Math.min(1, t);
+    t = Math.max(0, t);
+    return interpolate(st, ed, t);
+}

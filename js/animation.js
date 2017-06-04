@@ -8,14 +8,14 @@ function visualize_scanning(sorted_vertex) {
     });
     //var canvas = document.getElementById('animation');
     //var animation_ctx = canvas.getContext("2d");
-    var width = canvas.width * 1.5;
+    var width = canvas.width;// * 1.5;
     var height = canvas.height;
 
     var progress = 0, step = 0.003, highlight_radius = 30;
 
     var max_progress = (highlight_radius * 4) / width + 1;
 
-    var node_color = "#3c3c3c";
+    var node_color = "#7c7c7c";
     var scaling_radius = function (delta) {
         delta = Math.max(0, delta - 15);
         return highlight_radius * Math.exp(-delta / 10);
@@ -61,7 +61,9 @@ function visualize_scanning(sorted_vertex) {
             animation_ctx.lineWidth = 5;
             animation_ctx.beginPath();
             animation_ctx.moveTo(v.x, v.y);
-            var e = interpolate(v, rn, Math.min(1, delta / highlight_radius * 0.05));
+            // var e = interpolate(v, rn, Math.min(1, delta / highlight_radius * 0.05));
+            var e = interpolate2(v, rn, x_threshold);
+
             animation_ctx.lineTo(e.x, e.y);
             animation_ctx.stroke();
         }
@@ -90,7 +92,7 @@ function display_quadrilateral(quadrilaterals, history) {
         clearCanvas(context);
         var completed_count = Math.floor(progress * quadrilaterals.length);
         quadrilaterals.slice(0, completed_count).forEach(function (q) {
-            q.drawPath_closed(context, "rgb(208,208,208)");
+            q.drawPath_closed(context, "rgba(208,208,208,0.5)");
         });
 
         var animation_quadrilateral_id = completed_count;
@@ -109,7 +111,7 @@ function display_quadrilateral(quadrilaterals, history) {
         mid_t = interpolate(u, v, Math.min(t / first_stage, 1));
         context.save();
         context.lineWidth = active_lineWidth;
-        context.strokeStyle = "black";
+        context.strokeStyle = 'black';
         context.beginPath();
         context.moveTo(u.x, u.y);
         context.lineTo(mid_t.x, mid_t.y);
@@ -121,7 +123,7 @@ function display_quadrilateral(quadrilaterals, history) {
             context.save();
             context.setLineDash([10, 6]);
             context.lineWidth = active_lineWidth;
-            context.strokeStyle = "gray";
+            context.strokeStyle = 'gray';
             context.beginPath();
             context.moveTo(v.x, v.y);
             context.lineTo(mid_t.x, mid_t.y);
@@ -132,7 +134,7 @@ function display_quadrilateral(quadrilaterals, history) {
             mid_t = interpolate(r, s, Math.min((t - first_stage - second_stage) / third_stage, 1));
             context.save();
             context.lineWidth = active_lineWidth;
-            context.strokeStyle = "black";
+            context.strokeStyle = 'black';
             context.beginPath();
             context.moveTo(r.x, r.y);
             context.lineTo(mid_t.x, mid_t.y);
@@ -141,8 +143,8 @@ function display_quadrilateral(quadrilaterals, history) {
         }
         if (t > first_stage + second_stage + third_stage) {
             var opacity = (t - first_stage - second_stage - third_stage) / last_stage;
-            opacity = 1 / (1 + Math.exp((opacity * 12 - 6)));
-            var color = "rgba(128,128,128," + opacity + ")";
+            opacity = 0.5 + 0.5 / (1 + Math.exp((opacity * 12 - 6)));
+            var color = "rgba(208,208,208," + opacity + ")";
             q.drawPath_closed(animation_ctx, color, active_lineWidth);
         }
 

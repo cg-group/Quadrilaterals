@@ -114,10 +114,11 @@ function addVertex(x, y) {
         return false;
     }
 
-    clearCanvas(ctx);
     if (current_ring == null) {
-        createNewRing(x, y);
+        var status = createNewRing(x, y);
+        if (!status) return;
     }
+    clearCanvas(ctx);
     current_ring.pushVertex(x, y);
     current_polygon.draw(ctx);
     if (current_vertex != null) {
@@ -148,6 +149,7 @@ function createNewRing(x, y) {
         }
     }
     if (is_in == -1) {
+        return false;
         // 不在任何区域内，或在边界上
         var r = new Region();
         current_polygon.pushRegion(r);
@@ -164,6 +166,7 @@ function createNewRing(x, y) {
         current_region.pushInnerRing(ring);
         current_ring = ring;
     }
+    return true;
 }
 
 function closeRing(x, y) {
@@ -664,4 +667,3 @@ function decompose_and_display() {
     display_quadrilateral(quadrilaterals, result.history);
     console.log("decomposed into", quadrilaterals.length, "quadrilaterals");
 }
-
