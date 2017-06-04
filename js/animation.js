@@ -57,13 +57,16 @@ function visualize_scanning(sorted_vertex) {
             if (rn == null) {
                 continue;
             }
+            var gnt = animation_ctx.createLinearGradient(v.x, v.y, rn.x, rn.y);
+            gnt.addColorStop(0, 'blue');
+            gnt.addColorStop(1, 'yellow');
+            animation_ctx.strokeStyle = gnt;
             animation_ctx.setLineDash([]);
             animation_ctx.lineWidth = 5;
             animation_ctx.beginPath();
             animation_ctx.moveTo(v.x, v.y);
             // var e = interpolate(v, rn, Math.min(1, delta / highlight_radius * 0.05));
             var e = interpolate2(v, rn, x_threshold);
-
             animation_ctx.lineTo(e.x, e.y);
             animation_ctx.stroke();
         }
