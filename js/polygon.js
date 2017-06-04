@@ -233,6 +233,7 @@ function Ring() {
 Object.assign(Ring.prototype, {
     setVertices: function(vertices) {
         for (var i = 0; i < vertices.length; i++) {
+            if (this.parent == undefined) break;
             vertices[i].parent = this.id;
         }
         this.vertices = vertices;
@@ -260,14 +261,18 @@ Object.assign(Ring.prototype, {
 
     insertVertex: function(position, x, y) {
         var v = new Point2D(x, y);
-        v.parent = this.id;
+        if (this.parent != undefined) {
+            v.parent = this.id;
+        }
         this.vertices.splice(position, 0, v);
         return this;
     },
 
     pushVertex: function(x, y) {
         var v = new Point2D(x, y);
-        v.parent = this.id;
+        if (this.parent != undefined) {
+            v.parent = this.id;
+        }
         this.vertices.push(v);
         return this;
     },
