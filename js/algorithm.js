@@ -144,10 +144,10 @@ function scanline(region) {
         }
 
         //添加当前所有的左边
-        if (!tree.search(pre_edge.id) && pre_edge.is_left()) {
+        if (!tree.search(pre_edge.id) && pre_edge.is_tilt()) {
             left_edges.push(pre_edge);
         }
-        if (!tree.search(next_edge.id) && next_edge.is_left()) {
+        if (!tree.search(next_edge.id) && next_edge.is_tilt()) {
             left_edges.push(next_edge);
         }
         tree.insert(pre_edge.id);
