@@ -59,49 +59,70 @@ function scanline(region) {
 
     var set_right = 0;
 
+    var sum_tilt_edge = 0;
+    for (var i = 0; i < points.length - 1; i++) {//用时o(n)
+        var pre_edge = ALL_EDGE[points[i].pre_edge_id];
+        var next_edge = ALL_EDGE[points[i].next_edge_id];
+        if (pre_edge.is_tilt() == next_edge.is_tilt()) {
+            //test alternate edges
+            $('footer').text("倾斜边交替错误");
+            return false;
+        }
+        var id1, id2;
+        id1 = points[i].id;
+        if (pre_edge.is_tilt()) {
+            id2 = pre_edge.start.id;
+            if (id2 == id1) id2 = pre_edge.end.id;
+        } else {
+            id2 = next_edge.start.id;
+            if (id2 == id1) id2 = next_edge.end.id;
+        }
+        if (id2 == points[i + 1].id) {
+            sum_tilt_edge++;
+        }
+    }
+    // console.log(sum_tilt_edge);
+    if (sum_tilt_edge * 2 != points.length) {
+        $('footer').text("倾斜边不合法");
+        return false;
+    }
+
     for (var i = 0; i < points.length; i++) {//用时o(n)
         var pre_edge = ALL_EDGE[points[i].pre_edge_id];//left edge can be identified during the scan
         //pre_edge.tilted_or_not();
         var next_edge = ALL_EDGE[points[i].next_edge_id];
         //next_edge.tilted_or_not();
 
-        if (pre_edge.is_tilt() == next_edge.is_tilt()) {
-            //test alternate edges
-            console.log("alternate error");
-            // alert("not valid");
-            return false;
-        }
-
         var sin = crossMul(next_edge, pre_edge);//由于坐标轴问题，逆时针旋转实际是顺时针
         if (ALL_RING[points[i].parent].isOuterRing)
             sin = -sin;
         var cos = dotMul(next_edge, pre_edge);
-        console.log(points[i].id, "type is");
+        // console.log(points[i].id, "type is");
         if (sin > 0 && cos >= 0) {
             if ((pre_edge.is_tilt() + pre_edge.is_left() + next_edge.is_tilt() + next_edge.is_left()) % 2 != 0) {
-                console.log("b");//设置一些点的右邻居为v,v本身没有右邻居
+                // console.log("b");//设置一些点的右邻居为v,v本身没有右邻居
                 //tree.delete(tree.getRoot(),pre_edge.id);
                 //tree.delete(tree.getRoot(),next_edge.id);
                 //tree.inOrderTraverse(printNode)
                 check_right(points[i], left_edges);
             }
             else {
-                console.log("d");//v在等待设置右邻居
+                // console.log("d");//v在等待设置右邻居
                 //tree.insert(pre_edge.id);
                 //tree.insert(next_edge.id);
                 //tree.inOrderTraverse(printNode);
             }
         }
         else if (cos <= 0 && sin != -1) {
-            console.log("a");//设置一些点的右邻居为v,v在等待设置右邻居
+            // console.log("a");//设置一些点的右邻居为v,v在等待设置右邻居
             if (tree.search(pre_edge.id)) {
-                console.log("find", pre_edge.id);
+                // console.log("find", pre_edge.id);
                 //tree.delete(tree.getRoot(),pre_edge.id);
                 //tree.insert(next_edge.id);
                 //tree.inOrderTraverse(printNode);
             }
             else {
-                console.log("find", next_edge.id);
+                // console.log("find", next_edge.id);
                 //tree.delete(tree.getRoot(),next_edge.id);
                 //tree.insert(pre_edge.id);
                 //tree.inOrderTraverse(printNode);
@@ -110,14 +131,14 @@ function scanline(region) {
             check_right(points[i], left_edges);
         }
         else if (sin == -1 && cos == 0) {
-            console.log("c");//设置一些点的右邻居为v,v在等待设置右邻居
+            // console.log("c");//设置一些点的右邻居为v,v在等待设置右邻居
             //tree.insert(pre_edge.id);
             //tree.insert(next_edge.id);
             //tree.inOrderTraverse(printNode);
             check_right(points[i], left_edges);
         }
         else {//no interior angle is greater than 270
-            console.log("angle is greater than 270");
+            $('footer').text("内角大于270°");
             // alert("not valid");
             return false;
         }
@@ -132,7 +153,8 @@ function scanline(region) {
         tree.insert(pre_edge.id);
         tree.insert(next_edge.id);
     }
-    console.log(points);
+    // console.log(points);
+    $('footer').html('&nbsp;');
     return true;
 }
 
@@ -151,7 +173,7 @@ function sort_points_by_x(region) {
             return a.x - b.x;
 
     });
-    console.log(points);
+    // console.log(points);
     return points;
 
 }
@@ -237,7 +259,7 @@ function find_below(points, index) {//下面的且y最大的
 
         }
     if (below > -1)
-        console.log('below', points[below].id);
+        // console.log('below', points[below].id);
     if (count % 2 == 0)
         return null;
     else if (!points[below].right_neighbour)//如果这个点原先没有初始化右邻居
@@ -248,7 +270,7 @@ function find_below(points, index) {//下面的且y最大的
         return null;
 }
 function check_right(p, edges) {//右边上一个点对于所有左边点是否能够更新他们的右邻居
-    console.log("check_right", p.id, 'edges.length', edges.length);
+    // console.log("check_right", p.id, 'edges.length', edges.length);
     for (var i = 0; i < edges.length; i++) {
 
         if(p.id==edges[i].start.id || p.id==edges[i].end.id)
@@ -279,7 +301,7 @@ function check_valid(p1, p2, region) {
     for (var i = 0; i < region.edges.length; i++) {
         var start = region.edges[i].start;
         var end = region.edges[i].end;
-        console.log('test',start.id,end.id);
+        // console.log('test',start.id,end.id);
         if (start.id == p1.id || start.id == p2.id || end.id == p1.id || end.id == p2.id)
             continue;
         if (intersectionTest(p1, p2, region.edges[i].start, region.edges[i].end) == 'intersect'){

@@ -92,6 +92,11 @@ function keyEvent(e) {
                 resetAll();
             }, 800);
             break;
+        case 27: // ESC
+            if (in_tilt_mode) {
+                cancelMoveVertex();
+            }
+            break;
     }
 }
 
@@ -462,6 +467,12 @@ function checkCandidateVertexValid(x, y) {
             }
         }
     }
+    var text = '';
+    if (!r1) text += '无法添加顶点';
+    if (!r1 && !r2) text += '，';
+    if (!r2) text += '无法封闭多边形';
+    if (text == '') text = '&nbsp;';
+    $('footer').html(text);
     return [r1, r2];
 }
 
