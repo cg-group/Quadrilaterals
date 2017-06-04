@@ -291,8 +291,35 @@ Object.assign(Ring.prototype, {
 
     close: function() {
         this.closed = true;
+        this.sort();
         this.vertices[0].pre_edge_id=this.lastVertex().id;
-        // this.sort();
+    },
+
+    sort: function() {
+        // 将顶点排为逆时针
+        var sum = 0;
+        var n = this.vertices.length;
+        for (var i = 0; i < n; i++) {
+            var v1 = this.vertices[i];
+            var v2 = this.vertices[(i + 1) % n];
+            sum += (v2.x - v1.x) * (v2.y + v1.y);
+        }
+        if (sum < 0) {
+            // 顺时针
+            console.log('顺时针');
+            for (var i = 0; i < n / 2; i++) {
+                var j = n - i - 1;
+                var c;
+                c = this.vertices[i].x;
+                this.vertices[i].x = this.vertices[j].x;
+                this.vertices[j].x = c;
+                c = this.vertices[i].y;
+                this.vertices[i].y = this.vertices[j].y;
+                this.vertices[j].y = c;
+            }
+        } else {
+            console.log('逆时针');
+        }
     },
 
     lastVertex: function() {
