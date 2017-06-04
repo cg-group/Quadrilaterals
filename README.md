@@ -1,14 +1,21 @@
-# Quadrilaterals
+## 用户手册
 
-Decomposing polygonal regions into convex quadrilaterals!
+[TOC]
 
+### 1. 运行环境及启动方法
 
+打开`index.html`或访问[https://cg-group.github.io/Quadrilaterals/](https://cg-group.github.io/Quadrilaterals/)即可启动(推荐使用Chrome或Safari浏览器打开)。
 
-### todo list
+界面如图所示:
 
-* [x] (xjn/pyl)判断点是否在区域/环内，代码位于`polygon.js`里面`Region`、`Ring`下的`includingPoint`函数。预期效率是O(n)。返回值为字符串in/out/boundary。
-* [x] (zbw)修改多边形内环画法，不能简单涂上白色。(polygon.js, draw函数)
-* [x] (zbw)禁止环之间交叉、以及自交叉
-* [x] (xjn/pyl)检查`intersectionTest`函数正确与否，在`algorithm.js`里。
-* [x] (zbw)增加设置倾斜边的交互方式
-* [x] (xjn)判断移动斜边是否合法（interaction.js line 497&532，有注释说明）
+![](img/1.png)
+
+### 2. 概述
+
+### 3. 添加多边形
+
+#### 3.1 
+
+#### 3.2 调整倾斜边
+
+### 4. 分解多边形 
