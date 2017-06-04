@@ -8,7 +8,7 @@ function visualize_scanning(sorted_vertex) {
     });
     //var canvas = document.getElementById('animation');
     //var animation_ctx = canvas.getContext("2d");
-    var width = canvas.width;
+    var width = canvas.width * 1.5;
     var height = canvas.height;
 
     var progress = 0, step = 0.003, highlight_radius = 30;
